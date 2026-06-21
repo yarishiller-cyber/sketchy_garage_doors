@@ -124,7 +124,7 @@ svg { width: 1.25em; height: 1.25em; flex: none; }
 /* ---- Header ---- */
 .site-header { position: sticky; top: 0; z-index: 80; background: var(--brand); color: #fff; border-bottom: 1px solid var(--line-dark); }
 .nav { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding-block: .7rem; }
-.brand { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-head); font-weight: 700; font-size: 1.18rem; color: #fff; letter-spacing: -.01em; }
+.brand { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-head); font-weight: 700; font-size: 1.18rem; color: #fff; letter-spacing: -.01em; line-height: 1.08; }
 .brand:hover { text-decoration: none; }
 .brand__mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); color: #15171a; display: grid; place-items: center; flex: none; font-weight: 800; }
 .brand__mark svg { width: 1.3rem; height: 1.3rem; }
@@ -133,8 +133,9 @@ svg { width: 1.25em; height: 1.25em; flex: none; }
 .nav__links a { color: rgba(255,255,255,.85); font-weight: 600; font-size: var(--t-sm); }
 .nav__links a:hover { color: #fff; }
 .nav__actions { display: flex; align-items: center; gap: .6rem; }
-.nav__call { display: inline-flex; align-items: center; gap: .4rem; background: var(--accent); color: #15171a; padding: .55rem 1.05rem; border-radius: var(--r-pill); font-family: var(--font-head); font-weight: 700; font-size: var(--t-sm); }
+.nav__call { display: inline-flex; align-items: center; gap: .4rem; background: var(--accent); color: #15171a; padding: .55rem 1.05rem; border-radius: var(--r-pill); font-family: var(--font-head); font-weight: 700; font-size: var(--t-sm); white-space: nowrap; flex: none; }
 .nav__call:hover { background: #ffdb4a; text-decoration: none; }
+.nav__cta-row { display: none; }
 .nav__toggle { display: none; background: transparent; border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: .4rem .5rem; cursor: pointer; }
 .nav__toggle svg { width: 1.5rem; height: 1.5rem; }
 
@@ -343,13 +344,19 @@ svg { width: 1.25em; height: 1.25em; flex: none; }
   }
   .nav__links.is-open li { width: 100%; }
   .nav__links.is-open a { display: block; padding: .9rem .6rem; border-bottom: 1px solid var(--line-dark); color: #fff; }
+  .nav__links.is-open .nav__cta-row { display: block; padding: 1rem .6rem .4rem; }
+  .nav__links.is-open .nav__cta-row a { border-bottom: none; padding: .95rem; }
   .fab { display: flex; }
   body { padding-bottom: 56px; } /* room for FAB */
 }
 @media (max-width: 560px) {
   .grid--4 { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
-  .brand { font-size: 1.02rem; }
+  .brand { font-size: .95rem; }
+  .brand__mark { width: 30px; height: 30px; }
+  /* header call collapses to an icon-only button; the full Call CTA lives in the FAB + drawer */
+  .nav__call { padding: .5rem; gap: 0; }
+  .nav__call span { display: none; }
   .hero__badge { position: static; max-width: none; margin-top: var(--s-4); display: inline-block; }
   .section { padding-block: var(--s-7); }
 }

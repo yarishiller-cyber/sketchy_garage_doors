@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260621";
+const ASSETV = "20260621b";
 const TODAY = "2026-06-21";
 
 /* ---------------- icons ---------------- */
@@ -75,6 +75,7 @@ function header() {
     <nav aria-label="Primary">
       <ul class="nav__links" id="nav-links">
         ${NAV.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("\n        ")}
+        <li class="nav__cta-row"><a class="btn btn--primary btn--block" href="tel:${TEL}" data-evt="call">${I.phone}<span>Call ${TEL_DISPLAY}</span></a></li>
       </ul>
     </nav>
     <div class="nav__actions">
