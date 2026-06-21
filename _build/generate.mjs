@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260621b";
+const ASSETV = "20260621c";
 const TODAY = "2026-06-21";
 
 /* ---------------- icons ---------------- */
@@ -69,7 +69,10 @@ const FOOTER_CITIES = ["Vancouver", "Burnaby", "Surrey", "Richmond", "Coquitlam"
 const EXTRA_AREAS = ["Tsawwassen", "Ladner", "Anmore", "Belcarra", "Lions Bay"];
 const citySlug = (n) => n.toLowerCase().replace(/ /g, "-");
 
-function header() {
+function header(curPath = "") {
+  const isCur = (h) => h === curPath
+    || (h === "/service-areas/" && curPath.startsWith("/service-areas/"))
+    || (h === "/services.html" && /(garage-door-|new-garage-door|emergency-garage)/.test(curPath));
   return `<header class="site-header">
   <div class="container nav">
     <a class="brand" href="/" aria-label="${BRAND} home">
@@ -78,7 +81,7 @@ function header() {
     </a>
     <nav aria-label="Primary">
       <ul class="nav__links" id="nav-links">
-        ${NAV.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("\n        ")}
+        ${NAV.map(([h, t]) => `<li><a href="${h}"${isCur(h) ? ' aria-current="page"' : ""}>${t}</a></li>`).join("\n        ")}
         <li class="nav__cta-row"><a class="btn btn--primary btn--block" href="tel:${TEL}" data-evt="call">${I.phone}<span>Call ${TEL_DISPLAY}</span></a></li>
       </ul>
     </nav>
@@ -173,17 +176,29 @@ function businessNode() {
     "@type": "HomeAndConstructionBusiness",
     "@id": `${DOMAIN}/#business`,
     name: BRAND,
-    image: `${DOMAIN}/assets/img/home-hero-desktop.webp`,
+    image: [`${DOMAIN}/assets/img/home-hero-desktop.webp`, `${DOMAIN}/assets/img/about.webp`],
+    logo: `${DOMAIN}/assets/og/logo-512.png`,
     url: `${DOMAIN}/`,
     telephone: cfg.phone,
     email: EMAIL,
     priceRange: "$$",
+    currenciesAccepted: "CAD",
+    paymentAccepted: "Cash, Credit Card, Debit, e-Transfer",
+    slogan: "Sketchy name. Spotless work.",
     description: "Honest, guaranteed garage-door repair and installation across Greater Vancouver. Spring repair, openers, cables, off-track doors, new doors and same-day emergency service. Upfront pricing, no surprise fees.",
     address: { "@type": "PostalAddress", addressLocality: "Vancouver", addressRegion: "BC", addressCountry: "CA" },
     geo: { "@type": "GeoCoordinates", latitude: cfg.geo.lat, longitude: cfg.geo.lng },
     areaServed: CITIES.concat(EXTRA_AREAS).map((c) => ({ "@type": "City", name: c })),
     openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "07:00", closes: "20:00" }],
     knowsAbout: ["garage door spring repair", "garage door openers", "garage door cable repair", "off-track garage doors", "new garage door installation"],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Garage door repair & installation services",
+      itemListElement: SERVICES_NAV.map(([h, t]) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: t, url: DOMAIN + h, serviceType: t, provider: { "@id": `${DOMAIN}/#business` }, areaServed: { "@type": "City", name: "Greater Vancouver" } },
+      })),
+    },
   };
 }
 function breadcrumb(items) {
@@ -194,7 +209,11 @@ function faqNode(faqs) {
 }
 
 /* ---------------- layout ---------------- */
-function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-default.png", bodyClass = "" }) {
+function heroPreload(img) {
+  const b = img.replace(/\.webp$/, "");
+  return `<link rel="preload" as="image" href="${b}-960.webp" imagesrcset="${b}-480.webp 480w, ${b}-960.webp 960w, ${img} 1024w" imagesizes="100vw" fetchpriority="high">`;
+}
+function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-default.png", bodyClass = "", preload = "", noindex = false }) {
   const canonical = DOMAIN + path;
   const graph = { "@context": "https://schema.org", "@graph": [businessNode(), { "@type": "WebSite", "@id": `${DOMAIN}/#website`, url: `${DOMAIN}/`, name: BRAND, publisher: { "@id": `${DOMAIN}/#business` } }] };
   const ld = [graph].concat(jsonld);
@@ -207,7 +226,7 @@ function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-d
 <meta name="description" content="${desc}">
 <link rel="canonical" href="${canonical}">
 <meta name="theme-color" content="#15171a">
-<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="robots" content="${noindex ? "noindex, follow" : "index, follow, max-image-preview:large"}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${BRAND}">
 <meta property="og:title" content="${title}">
@@ -218,18 +237,22 @@ function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-d
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${desc}">
 <meta name="twitter:image" content="${DOMAIN}${ogImg}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+${preload}
+<link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-700-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-400-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-600-latin.woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css?v=${ASSETV}">
 <link rel="stylesheet" href="/styles.css?v=${ASSETV}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/og/og-default.png">
+<link rel="icon" href="/assets/og/logo-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/og/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n")}
 </head>
 <body class="${bodyClass}">
 <a class="skip-link" href="#main">Skip to content</a>
-${header()}
+${header(path)}
 <main id="main">
 ${body}
 </main>
@@ -237,9 +260,16 @@ ${footer()}
 ${fab()}
 <script src="/script.js?v=${ASSETV}" defer></script>
 <script type="module">
-  import { animate, inView, scroll, stagger } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
-  window.__motion = { animate, inView, scroll, stagger };
-  import("/js/motion.js").then(m => m.initMotion());
+  const boot = async () => {
+    try {
+      const m = await import("https://cdn.jsdelivr.net/npm/motion@latest/+esm");
+      window.__motion = { animate: m.animate, inView: m.inView, scroll: m.scroll, stagger: m.stagger };
+      const mod = await import("/js/motion.js");
+      mod.initMotion();
+    } catch (e) { /* CDN blocked: motion.js fallback reveals all content */ }
+  };
+  if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 1800 });
+  else setTimeout(boot, 200);
 </script>
 </body>
 </html>`;
@@ -252,7 +282,7 @@ function pagehead({ h1, sub, img, alt, crumbs }) {
   return `<section class="pagehead pagehead--img">
   <img class="pagehead__bg" src="${base}-960.webp" srcset="${srcset}" sizes="100vw" alt="" aria-hidden="true" fetchpriority="high" width="1024" height="1024">
   <div class="container">
-    <div data-reveal>
+    <div>
       ${crumbs ? `<nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,.7)">${crumbs}</nav>` : ""}
       <h1>${h1}</h1>
       <p class="lead">${sub}</p>
@@ -292,7 +322,7 @@ const ASSURANCES = [
   [I.check, "Fixed right, guaranteed", "Workmanship warranty — if it's not right, we come back free."],
 ];
 function assuranceStrip() {
-  return `<section class="trustbar"><div class="container"><div class="trustbar__grid" data-stagger>
+  return `<section class="trustbar"><div class="container"><div class="trustbar__grid">
     ${ASSURANCES.map(([ic, t, d]) => `<div class="trustbar__item">${ic}<span>${t}</span></div>`).join("\n    ")}
   </div></div></section>`;
 }
@@ -438,7 +468,7 @@ function openerCard(m) {
   const base = "/assets/openers/" + m.image.replace(".webp", "");
   return `<div class="opener" data-reveal>
     <div class="opener__main">
-      <img class="opener__img" src="${base}.webp" srcset="${base}-480.webp 480w, ${base}.webp 1000w" sizes="150px" width="150" height="118" loading="lazy" alt="${m.imageAlt}">
+      <img class="opener__img" src="${base}.webp" srcset="${base}-480.webp 480w, ${base}.webp 1000w" sizes="150px" width="150" height="118" loading="lazy" decoding="async" alt="${m.imageAlt}">
       <div class="opener__info">
         <span class="opener__tag">${m.tag}</span>
         <h3>${m.name}</h3>
@@ -521,7 +551,7 @@ ${assuranceStrip()}
       <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem">${callBtn()} ${textBtn("btn btn--ghost")}</div>
     </div>
     <div class="split__media zoom-frame" data-reveal="right">
-      <img src="${s.img}" width="1024" height="1024" loading="lazy" alt="${s.h1} — Sketchy Garage Doors technician at work in Metro Vancouver">
+      <img src="${s.img}" width="1024" height="1024" loading="lazy" decoding="async" alt="${s.h1} — Sketchy Garage Doors technician at work in Metro Vancouver">
     </div>
   </div>
 </section>
@@ -547,7 +577,7 @@ ${faqSection(s.faqs)}
 ${ctaBand()}`;
 
   out(s.file, layout({
-    path: "/" + s.file, title: s.title, desc: s.desc, body, ogImg: s.img,
+    path: "/" + s.file, title: s.title, desc: s.desc, body, ogImg: s.img, preload: heroPreload(s.img),
     jsonld: [serviceLd, ...extraLd, breadcrumb([["Home", "/"], ["Services", "/services.html"], [s.nav, "/" + s.file]]), faqNode(s.faqs)],
   }));
 }
@@ -589,7 +619,7 @@ function springTypes() {
     </div>
     <div class="grid grid--2" data-stagger style="margin-top:2.2rem">
       <div class="card" style="padding:0;overflow:hidden">
-        <div class="zoom-frame" style="border-radius:0"><img src="/assets/img/spring-torsion.webp" srcset="/assets/img/spring-torsion-480.webp 480w, /assets/img/spring-torsion-960.webp 960w, /assets/img/spring-torsion.webp 1024w" sizes="(max-width:820px) 100vw, 560px" width="1024" height="1024" loading="lazy" alt="Torsion spring mounted on the shaft above a residential garage door"></div>
+        <div class="zoom-frame" style="border-radius:0"><img src="/assets/img/spring-torsion.webp" srcset="/assets/img/spring-torsion-480.webp 480w, /assets/img/spring-torsion-960.webp 960w, /assets/img/spring-torsion.webp 1024w" sizes="(max-width:820px) 100vw, 560px" width="1024" height="1024" loading="lazy" decoding="async" alt="Torsion spring mounted on the shaft above a residential garage door"></div>
         <div style="padding:var(--s-6)">
           <span class="tag">Most common</span>
           <h3 style="margin-top:.7rem">Torsion springs (above the door)</h3>
@@ -598,7 +628,7 @@ function springTypes() {
         </div>
       </div>
       <div class="card" style="padding:0;overflow:hidden">
-        <div class="zoom-frame" style="border-radius:0"><img src="/assets/img/spring-extension.webp" srcset="/assets/img/spring-extension-480.webp 480w, /assets/img/spring-extension-960.webp 960w, /assets/img/spring-extension.webp 1024w" sizes="(max-width:820px) 100vw, 560px" width="1024" height="1024" loading="lazy" alt="Extension spring running along the horizontal track of a residential garage door"></div>
+        <div class="zoom-frame" style="border-radius:0"><img src="/assets/img/spring-extension.webp" srcset="/assets/img/spring-extension-480.webp 480w, /assets/img/spring-extension-960.webp 960w, /assets/img/spring-extension.webp 1024w" sizes="(max-width:820px) 100vw, 560px" width="1024" height="1024" loading="lazy" decoding="async" alt="Extension spring running along the horizontal track of a residential garage door"></div>
         <div style="padding:var(--s-6)">
           <span class="tag">Older / lighter doors</span>
           <h3 style="margin-top:.7rem">Extension springs (along the tracks)</h3>
@@ -860,7 +890,7 @@ ${faqSection(c.faqs, `Garage door FAQs — ${name}`)}
 </section>
 ${ctaBand(`Need a garage door fixed in ${name} today?`)}`;
   out(path, layout({
-    path, title, desc, body, ogImg: c.img,
+    path, title, desc, body, ogImg: c.img, preload: heroPreload(c.img),
     jsonld: [serviceLd, breadcrumb([["Home", "/"], ["Service Areas", "/service-areas/"], [name, path]]), faqNode(c.faqs)],
   }));
 }
@@ -903,7 +933,7 @@ function home() {
         <span><span class="dot"></span>No $19.99 bait</span>
       </div>
     </div>
-    <div class="hero__media" data-reveal="right">
+    <div class="hero__media">
       <div class="frame">
         <picture>
           <source media="(max-width: 768px)" srcset="/assets/img/home-hero-mobile-960.webp 960w, /assets/img/home-hero-mobile-480.webp 480w" sizes="100vw">
@@ -946,7 +976,7 @@ ${assuranceStrip()}
         <div style="margin-top:1.4rem">${callBtn()} <a class="btn btn--on-dark" href="/garage-door-spring-repair.html">See spring pricing</a></div>
       </div>
       <div class="split__media zoom-frame" data-reveal="right">
-        <img src="/assets/img/svc-spring.webp" width="1024" height="1024" loading="lazy" alt="Technician replacing a broken garage door torsion spring in a Metro Vancouver garage">
+        <img src="/assets/img/svc-spring.webp" width="1024" height="1024" loading="lazy" decoding="async" alt="Technician replacing a broken garage door torsion spring in a Metro Vancouver garage">
       </div>
     </div>
   </div>
@@ -955,7 +985,7 @@ ${assuranceStrip()}
 <section class="section">
   <div class="container split">
     <div class="split__media zoom-frame" data-reveal="left">
-      <img src="/assets/img/about.webp" width="1024" height="1024" loading="lazy" alt="Two Sketchy Garage Doors technicians beside their branded van in Metro Vancouver">
+      <img src="/assets/img/about.webp" width="1024" height="1024" loading="lazy" decoding="async" alt="Two Sketchy Garage Doors technicians beside their branded van in Metro Vancouver">
     </div>
     <div data-reveal="right">
       <span class="eyebrow">Why trust a company called Sketchy?</span>
@@ -995,10 +1025,12 @@ ${assuranceStrip()}
 ${faqSection(homeFaqs, "Your questions, answered straight")}
 ${ctaBand("The name's the only sketchy thing. Let's fix your door.")}`;
 
+  const homePreload = `<link rel="preload" as="image" media="(min-width:769px)" href="/assets/img/home-hero-desktop-960.webp" imagesrcset="/assets/img/home-hero-desktop-960.webp 960w, /assets/img/home-hero-desktop.webp 1024w" imagesizes="50vw" fetchpriority="high">
+<link rel="preload" as="image" media="(max-width:768px)" href="/assets/img/home-hero-mobile-480.webp" imagesrcset="/assets/img/home-hero-mobile-480.webp 480w, /assets/img/home-hero-mobile-960.webp 960w" imagesizes="100vw" fetchpriority="high">`;
   out("index.html", layout({
     path: "/", title: "Sketchy Garage Doors | Honest Garage Door Repair Across Greater Vancouver",
     desc: "Sketchy name, spotless work. Same-day garage door repair across Greater Vancouver — broken springs, openers, cables, off-track doors & new installs. Upfront pricing, licensed & insured, guaranteed.",
-    body, jsonld: [faqNode(homeFaqs)],
+    body, preload: homePreload, jsonld: [faqNode(homeFaqs)],
   }));
 }
 
@@ -1028,7 +1060,7 @@ ${ctaBand()}`;
   out("services.html", layout({
     path: "/services.html", title: "Garage Door Services Greater Vancouver | Sketchy Garage Doors",
     desc: "All Sketchy Garage Doors services across Greater Vancouver: spring repair, opener repair & installation, cable repair, off-track & rollers, new doors, tune-ups and emergency repair. Upfront pricing.",
-    body, jsonld: [breadcrumb([["Home", "/"], ["Services", "/services.html"]])],
+    body, preload: heroPreload("/assets/img/svc-opener.webp"), jsonld: [breadcrumb([["Home", "/"], ["Services", "/services.html"]])],
   }));
 }
 
@@ -1055,7 +1087,7 @@ ${ctaBand()}`;
   out("service-areas/index.html", layout({
     path: "/service-areas/", title: "Service Areas — Garage Door Repair Greater Vancouver | Sketchy",
     desc: "Sketchy Garage Doors serves all of Greater Vancouver: Vancouver, Burnaby, Surrey, Richmond, Coquitlam, North Vancouver and more. Same-day garage door repair with upfront pricing.",
-    body, jsonld: [breadcrumb([["Home", "/"], ["Service Areas", "/service-areas/"]])],
+    body, preload: heroPreload("/assets/img/city-vancouver.webp"), jsonld: [breadcrumb([["Home", "/"], ["Service Areas", "/service-areas/"]])],
   }));
 }
 
@@ -1091,7 +1123,7 @@ ${ctaBand()}`;
   out("about.html", layout({
     path: "/about.html", title: "About Sketchy Garage Doors | Honest Garage Door Repair, Greater Vancouver",
     desc: "Canadian-owned, business-licensed, insured & WorkSafeBC-covered garage-door techs serving Greater Vancouver. We named ourselves Sketchy, then built the opposite: upfront pricing and a real guarantee.",
-    body, ogImg: "/assets/img/about.webp", jsonld: [breadcrumb([["Home", "/"], ["About", "/about.html"]])],
+    body, ogImg: "/assets/img/about.webp", preload: heroPreload("/assets/img/about.webp"), jsonld: [breadcrumb([["Home", "/"], ["About", "/about.html"]])],
   }));
 }
 
@@ -1153,7 +1185,7 @@ ${ctaBand()}`;
   out("contact.html", layout({
     path: "/contact.html", title: "Contact | Garage Door Repair Greater Vancouver | Sketchy Garage Doors",
     desc: `Contact Sketchy Garage Doors — call or text ${TEL_DISPLAY}, or email ${EMAIL}. Same-day garage door repair across Greater Vancouver with upfront, written pricing.`,
-    body, ogImg: "/assets/img/contact.webp", jsonld: [breadcrumb([["Home", "/"], ["Contact", "/contact.html"]])],
+    body, ogImg: "/assets/img/contact.webp", preload: heroPreload("/assets/img/contact.webp"), jsonld: [breadcrumb([["Home", "/"], ["Contact", "/contact.html"]])],
   }));
 }
 
@@ -1178,7 +1210,7 @@ ${ctaBand()}`;
   out("faq.html", layout({
     path: "/faq.html", title: "Garage Door FAQ — Costs, Timing, Safety | Sketchy Garage Doors",
     desc: "Honest answers on garage door repair costs, same-day timing, BC licensing, broken springs, scam red flags and repair-vs-replace across Greater Vancouver. Sketchy name, spotless work.",
-    body, ogImg: "/assets/img/faq.webp", jsonld: [faqNode(faqs), breadcrumb([["Home", "/"], ["FAQ", "/faq.html"]])],
+    body, ogImg: "/assets/img/faq.webp", preload: heroPreload("/assets/img/faq.webp"), jsonld: [faqNode(faqs), breadcrumb([["Home", "/"], ["FAQ", "/faq.html"]])],
   }));
 }
 
@@ -1209,7 +1241,7 @@ ${ctaBand("Homeowner, not a trade? We've got you too.", "Need your own garage do
   out("become-a-partner.html", layout({
     path: "/become-a-partner.html", title: "Become a Partner — Overflow Garage-Door Leads | Sketchy Garage Doors",
     desc: "Licensed installers & trades: apply to receive vetted overflow garage-door jobs across Greater Vancouver from Sketchy Garage Doors. Pick your areas and volume. Apply in two minutes.",
-    body, ogImg: "/assets/img/partner.webp", jsonld: [breadcrumb([["Home", "/"], ["Become a Partner", "/become-a-partner.html"]])],
+    body, ogImg: "/assets/img/partner.webp", preload: heroPreload("/assets/img/partner.webp"), jsonld: [breadcrumb([["Home", "/"], ["Become a Partner", "/become-a-partner.html"]])],
   }));
 }
 
@@ -1230,7 +1262,7 @@ function thankYou() {
   out("thank-you.html", layout({
     path: "/thank-you.html", title: "Thank You | Sketchy Garage Doors",
     desc: "Thanks for contacting Sketchy Garage Doors. We'll reply fast — usually the same day. For urgent garage-door problems, call or text us now.",
-    body, bodyClass: "", jsonld: [],
+    body, bodyClass: "", noindex: true, jsonld: [],
   }));
 }
 
@@ -1242,7 +1274,7 @@ function legal(slug, title, heading, sections) {
   <h2>Contact</h2>
   <p>Questions about this policy? Email <a href="mailto:${EMAIL}">${EMAIL}</a> or call ${TEL_DISPLAY}.</p>
 </div></div></section>`;
-  out(slug, layout({ path: "/" + slug, title, desc: heading + " for Sketchy Garage Doors, Greater Vancouver.", body, jsonld: [breadcrumb([["Home", "/"], [heading, "/" + slug]])] }));
+  out(slug, layout({ path: "/" + slug, title, desc: heading + " for Sketchy Garage Doors, Greater Vancouver.", body, preload: heroPreload("/assets/img/contact.webp"), jsonld: [breadcrumb([["Home", "/"], [heading, "/" + slug]])] }));
 }
 
 function privacy() {
@@ -1289,7 +1321,7 @@ function notFound() {
     <div style="margin-top:1.6rem">${callBtn("btn btn--primary btn--lg")}</div>
   </div>
 </section>`;
-  out("404.html", layout({ path: "/404.html", title: "Page Not Found | Sketchy Garage Doors", desc: "That page went off-track. Find garage-door services and service areas, or call Sketchy Garage Doors in Greater Vancouver.", body, jsonld: [] }));
+  out("404.html", layout({ path: "/404.html", title: "Page Not Found | Sketchy Garage Doors", desc: "That page went off-track. Find garage-door services and service areas, or call Sketchy Garage Doors in Greater Vancouver.", body, noindex: true, jsonld: [] }));
 }
 
 /* =====================================================================
