@@ -242,8 +242,10 @@ ${fab()}
 
 /* ---------------- reusable section builders ---------------- */
 function pagehead({ h1, sub, img, alt, crumbs }) {
+  const base = img.replace(/\.webp$/, "");
+  const srcset = `${base}-480.webp 480w, ${base}-960.webp 960w, ${img} 1024w`;
   return `<section class="pagehead pagehead--img">
-  <img class="pagehead__bg" src="${img}" alt="" aria-hidden="true" fetchpriority="high" width="1024" height="1024">
+  <img class="pagehead__bg" src="${base}-960.webp" srcset="${srcset}" sizes="100vw" alt="" aria-hidden="true" fetchpriority="high" width="1024" height="1024">
   <div class="container">
     <div data-reveal>
       ${crumbs ? `<nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,.7)">${crumbs}</nav>` : ""}
