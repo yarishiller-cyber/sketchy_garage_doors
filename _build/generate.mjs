@@ -338,8 +338,8 @@ const services = {
     file: "garage-door-spring-repair.html",
     nav: "Spring repair",
     h1: "Garage Door Spring Repair Across Greater Vancouver",
-    title: "Garage Door Spring Repair Greater Vancouver | Sketchy Garage Doors",
-    desc: "Broken garage door spring? Same-day torsion & extension spring replacement across Metro Vancouver. Single spring from $189, two springs + free cables from $329. Upfront pricing, guaranteed.",
+    title: "Garage Door Spring Repair Greater Vancouver | Sketchy",
+    desc: "Broken garage door spring? Same-day torsion & extension replacement across Metro Vancouver — single from $189, two + free cables from $329. Guaranteed.",
     img: "/assets/img/svc-spring.webp",
     serviceType: "Garage Door Spring Repair",
     range: cfg.serviceRanges.spring,
@@ -358,7 +358,7 @@ const services = {
     nav: "Opener repair & install",
     h1: "Garage Door Opener Repair & Installation",
     title: "Garage Door Opener Repair & Installation Vancouver | Sketchy",
-    desc: "Opener won't open, reversing, or beeping? We repair and install LiftMaster myQ openers across Greater Vancouver. Repairs $129–$249, new openers from $399 installed. Same-day, guaranteed.",
+    desc: "Opener won't open, reversing or beeping? We repair & install LiftMaster myQ openers across Metro Vancouver. Repairs $129–$249, new from $399. Same-day.",
     img: "/assets/img/svc-opener.webp",
     serviceType: "Garage Door Opener Repair and Installation",
     range: cfg.serviceRanges.opener,
@@ -376,8 +376,8 @@ const services = {
     file: "garage-door-cable-repair.html",
     nav: "Cable repair",
     h1: "Garage Door Cable Repair",
-    title: "Garage Door Cable Repair Greater Vancouver | Sketchy Garage Doors",
-    desc: "Frayed or snapped garage door cable, or door hanging crooked? Same-day cable repair across Metro Vancouver, $159–$229. Licensed, insured, guaranteed. Call or text Sketchy.",
+    title: "Garage Door Cable Repair Greater Vancouver | Sketchy",
+    desc: "Frayed or snapped cable, or door hanging crooked? Same-day garage door cable repair across Metro Vancouver, $159–$229. Licensed, insured & guaranteed.",
     img: "/assets/img/svc-cable.webp",
     serviceType: "Garage Door Cable Repair",
     range: cfg.serviceRanges.cable,
@@ -394,7 +394,7 @@ const services = {
     nav: "Off-track & rollers",
     h1: "Off-Track & Roller Repair",
     title: "Garage Door Off Track & Roller Repair Vancouver | Sketchy",
-    desc: "Garage door off its track, stuck, or grinding? We re-rail doors and replace worn/noisy rollers across Greater Vancouver, $149–$289. Same-day, guaranteed. Call or text Sketchy.",
+    desc: "Garage door off its track, stuck or grinding? We re-rail doors and replace worn, noisy rollers across Metro Vancouver, $149–$289. Same-day & guaranteed.",
     img: "/assets/img/svc-offtrack.webp",
     serviceType: "Garage Door Off-Track and Roller Repair",
     range: cfg.serviceRanges.offtrack,
@@ -410,8 +410,8 @@ const services = {
     file: "new-garage-door-installation.html",
     nav: "New door installation",
     h1: "New Garage Door Installation",
-    title: "New Garage Door Installation Greater Vancouver | Sketchy Garage Doors",
-    desc: "Replacing a tired or damaged garage door? Insulated steel, modern aluminium-glass & carriage-style doors installed across Metro Vancouver, from $1,290. Free quotes, guaranteed.",
+    title: "New Garage Door Installation Vancouver | Sketchy",
+    desc: "Replacing a tired or damaged garage door? Insulated steel, aluminium-glass & carriage doors installed across Metro Vancouver from $1,290. Free quotes.",
     img: "/assets/img/svc-newdoor.webp",
     serviceType: "Garage Door Installation",
     range: cfg.serviceRanges.newdoor,
@@ -428,8 +428,8 @@ const services = {
     file: "garage-door-maintenance-tune-up.html",
     nav: "Maintenance & tune-up",
     h1: "Garage Door Maintenance & Tune-Up",
-    title: "Garage Door Maintenance & Tune-Up Vancouver | Sketchy Garage Doors",
-    desc: "Keep your door quiet and safe with a $129 flat-rate tune-up across Greater Vancouver: balance, rollers, hinges, springs, sensors & safety check. Catch small problems before they snap.",
+    title: "Garage Door Tune-Up & Maintenance Vancouver | Sketchy",
+    desc: "Keep your door quiet and safe with a $129 flat-rate tune-up across Metro Vancouver: balance, rollers, hinges, springs & full safety check. Book ahead.",
     img: "/assets/img/svc-maintenance.webp",
     serviceType: "Garage Door Maintenance and Tune-Up",
     range: cfg.serviceRanges.maintenance,
@@ -445,8 +445,8 @@ const services = {
     file: "emergency-garage-door-repair.html",
     nav: "Emergency repair",
     h1: "Emergency Garage Door Repair",
-    title: "Emergency Garage Door Repair Greater Vancouver | Sketchy Garage Doors",
-    desc: "Door stuck open, car trapped, or door won't close at night? Fast same-day emergency garage door repair across Metro Vancouver. Honest after-hours rates, no panic upsells. Call or text now.",
+    title: "Emergency Garage Door Repair Vancouver | Sketchy",
+    desc: "Door stuck open, car trapped, or won't close at night? Fast same-day emergency garage door repair across Metro Vancouver. Honest after-hours rates.",
     img: "/assets/img/svc-emergency.webp",
     serviceType: "Emergency Garage Door Repair",
     range: cfg.serviceRanges.emergency,
@@ -846,8 +846,8 @@ function cityPage(name) {
   const c = cityData[name];
   const slug = citySlug(name);
   const path = "/service-areas/" + slug + ".html";
-  const title = `Garage Door Repair ${name} | Same-Day | Sketchy Garage Doors`;
-  const desc = `Same-day garage door repair in ${name}, BC — broken springs, cables, openers, off-track & new doors. Upfront pricing, licensed & insured, guaranteed. Call or text Sketchy.`;
+  const title = `Garage Door Repair ${name} | Same-Day | Sketchy`;
+  const desc = `Same-day garage door repair in ${name}, BC — springs, cables, openers, off-track & new doors. Upfront pricing, licensed, insured & guaranteed.`;
   const crumbs = `<a href="/">Home</a> / <a href="/service-areas/">Service Areas</a> / <span style="color:#fff">${name}</span>`;
   const nearby = CITIES.filter((x) => x !== name);
   const serviceLd = {
@@ -1028,8 +1028,8 @@ ${ctaBand("The name's the only sketchy thing. Let's fix your door.")}`;
   const homePreload = `<link rel="preload" as="image" media="(min-width:769px)" href="/assets/img/home-hero-desktop-960.webp" imagesrcset="/assets/img/home-hero-desktop-960.webp 960w, /assets/img/home-hero-desktop.webp 1024w" imagesizes="50vw" fetchpriority="high">
 <link rel="preload" as="image" media="(max-width:768px)" href="/assets/img/home-hero-mobile-480.webp" imagesrcset="/assets/img/home-hero-mobile-480.webp 480w, /assets/img/home-hero-mobile-960.webp 960w" imagesizes="100vw" fetchpriority="high">`;
   out("index.html", layout({
-    path: "/", title: "Sketchy Garage Doors | Honest Garage Door Repair Across Greater Vancouver",
-    desc: "Sketchy name, spotless work. Same-day garage door repair across Greater Vancouver — broken springs, openers, cables, off-track doors & new installs. Upfront pricing, licensed & insured, guaranteed.",
+    path: "/", title: "Sketchy Garage Doors | Repair Across Greater Vancouver",
+    desc: "Sketchy name, spotless work. Same-day garage door repair across Greater Vancouver — springs, openers, cables, off-track & new doors. Upfront, guaranteed.",
     body, preload: homePreload, jsonld: [faqNode(homeFaqs)],
   }));
 }
@@ -1058,8 +1058,8 @@ ${assuranceStrip()}
 </section>
 ${ctaBand()}`;
   out("services.html", layout({
-    path: "/services.html", title: "Garage Door Services Greater Vancouver | Sketchy Garage Doors",
-    desc: "All Sketchy Garage Doors services across Greater Vancouver: spring repair, opener repair & installation, cable repair, off-track & rollers, new doors, tune-ups and emergency repair. Upfront pricing.",
+    path: "/services.html", title: "Garage Door Services Greater Vancouver | Sketchy",
+    desc: "Every Sketchy service across Greater Vancouver: spring, opener, cable, off-track & roller repair, new doors, tune-ups & emergency. Upfront pricing.",
     body, preload: heroPreload("/assets/img/svc-opener.webp"), jsonld: [breadcrumb([["Home", "/"], ["Services", "/services.html"]])],
   }));
 }
@@ -1085,8 +1085,8 @@ ${assuranceStrip()}
 </section>
 ${ctaBand()}`;
   out("service-areas/index.html", layout({
-    path: "/service-areas/", title: "Service Areas — Garage Door Repair Greater Vancouver | Sketchy",
-    desc: "Sketchy Garage Doors serves all of Greater Vancouver: Vancouver, Burnaby, Surrey, Richmond, Coquitlam, North Vancouver and more. Same-day garage door repair with upfront pricing.",
+    path: "/service-areas/", title: "Garage Door Repair Service Areas | Greater Vancouver",
+    desc: "Sketchy Garage Doors serves all of Greater Vancouver — Vancouver, Burnaby, Surrey, Richmond, Coquitlam, North Van & more. Same-day, upfront pricing.",
     body, preload: heroPreload("/assets/img/city-vancouver.webp"), jsonld: [breadcrumb([["Home", "/"], ["Service Areas", "/service-areas/"]])],
   }));
 }
@@ -1121,8 +1121,8 @@ ${assuranceStrip()}
 </section>
 ${ctaBand()}`;
   out("about.html", layout({
-    path: "/about.html", title: "About Sketchy Garage Doors | Honest Garage Door Repair, Greater Vancouver",
-    desc: "Canadian-owned, business-licensed, insured & WorkSafeBC-covered garage-door techs serving Greater Vancouver. We named ourselves Sketchy, then built the opposite: upfront pricing and a real guarantee.",
+    path: "/about.html", title: "About Sketchy Garage Doors | Greater Vancouver",
+    desc: "Canadian-owned, licensed, insured & WorkSafeBC-covered garage-door techs across Greater Vancouver. We named ourselves Sketchy, then built the opposite.",
     body, ogImg: "/assets/img/about.webp", preload: heroPreload("/assets/img/about.webp"), jsonld: [breadcrumb([["Home", "/"], ["About", "/about.html"]])],
   }));
 }
@@ -1183,8 +1183,8 @@ function contact() {
 </section>
 ${ctaBand()}`;
   out("contact.html", layout({
-    path: "/contact.html", title: "Contact | Garage Door Repair Greater Vancouver | Sketchy Garage Doors",
-    desc: `Contact Sketchy Garage Doors — call or text ${TEL_DISPLAY}, or email ${EMAIL}. Same-day garage door repair across Greater Vancouver with upfront, written pricing.`,
+    path: "/contact.html", title: "Contact Sketchy Garage Doors | Greater Vancouver",
+    desc: `Call or text Sketchy Garage Doors at ${TEL_DISPLAY} for same-day garage door repair across Greater Vancouver. Upfront written pricing, free quotes.`,
     body, ogImg: "/assets/img/contact.webp", preload: heroPreload("/assets/img/contact.webp"), jsonld: [breadcrumb([["Home", "/"], ["Contact", "/contact.html"]])],
   }));
 }
@@ -1208,8 +1208,8 @@ function faqPage() {
 ${faqSection(faqs, "Everything people ask us")}
 ${ctaBand()}`;
   out("faq.html", layout({
-    path: "/faq.html", title: "Garage Door FAQ — Costs, Timing, Safety | Sketchy Garage Doors",
-    desc: "Honest answers on garage door repair costs, same-day timing, BC licensing, broken springs, scam red flags and repair-vs-replace across Greater Vancouver. Sketchy name, spotless work.",
+    path: "/faq.html", title: "Garage Door FAQ — Cost, Timing & Safety | Sketchy",
+    desc: "Honest answers on garage door repair costs, same-day timing, BC licensing, broken springs, scam red flags and repair-vs-replace in Greater Vancouver.",
     body, ogImg: "/assets/img/faq.webp", preload: heroPreload("/assets/img/faq.webp"), jsonld: [faqNode(faqs), breadcrumb([["Home", "/"], ["FAQ", "/faq.html"]])],
   }));
 }
@@ -1239,8 +1239,8 @@ function partner() {
 </section>
 ${ctaBand("Homeowner, not a trade? We've got you too.", "Need your own garage door fixed? Call or text and we'll handle it directly.")}`;
   out("become-a-partner.html", layout({
-    path: "/become-a-partner.html", title: "Become a Partner — Overflow Garage-Door Leads | Sketchy Garage Doors",
-    desc: "Licensed installers & trades: apply to receive vetted overflow garage-door jobs across Greater Vancouver from Sketchy Garage Doors. Pick your areas and volume. Apply in two minutes.",
+    path: "/become-a-partner.html", title: "Become a Partner | Sketchy Garage Doors",
+    desc: "Licensed installers & trades: apply for vetted overflow garage-door jobs across Greater Vancouver. Pick your areas and volume. Apply in two minutes.",
     body, ogImg: "/assets/img/partner.webp", preload: heroPreload("/assets/img/partner.webp"), jsonld: [breadcrumb([["Home", "/"], ["Become a Partner", "/become-a-partner.html"]])],
   }));
 }
