@@ -62,7 +62,11 @@ const SERVICES_NAV = [
   ["/emergency-garage-door-repair.html", "Emergency repair"],
 ];
 
-const CITIES = ["Vancouver", "Burnaby", "Surrey", "Richmond", "Coquitlam", "North Vancouver"];
+const CITIES = ["Vancouver", "Burnaby", "Surrey", "Richmond", "Coquitlam", "North Vancouver", "Port Coquitlam", "Port Moody", "New Westminster", "West Vancouver", "Delta", "Langley", "Maple Ridge", "Pitt Meadows", "White Rock"];
+// Footer shows a curated subset (full list lives on the Service Areas hub).
+const FOOTER_CITIES = ["Vancouver", "Burnaby", "Surrey", "Richmond", "Coquitlam", "North Vancouver", "Langley", "Delta"];
+// Smaller communities mentioned (no dedicated page) for honest extra coverage.
+const EXTRA_AREAS = ["Tsawwassen", "Ladner", "Anmore", "Belcarra", "Lions Bay"];
 const citySlug = (n) => n.toLowerCase().replace(/ /g, "-");
 
 function header() {
@@ -125,7 +129,7 @@ function footer() {
       </div>
       <div>
         <h4>Service areas</h4>
-        <ul>${CITIES.map((c) => `<li><a href="/service-areas/${citySlug(c)}.html">${c}</a></li>`).join("")}<li><a href="/service-areas/">All Metro Vancouver →</a></li></ul>
+        <ul>${FOOTER_CITIES.map((c) => `<li><a href="/service-areas/${citySlug(c)}.html">${c}</a></li>`).join("")}<li><a href="/service-areas/">All Metro Vancouver →</a></li></ul>
       </div>
       <div class="footer-contact">
         <h4>Get in touch</h4>
@@ -177,7 +181,7 @@ function businessNode() {
     description: "Honest, guaranteed garage-door repair and installation across Greater Vancouver. Spring repair, openers, cables, off-track doors, new doors and same-day emergency service. Upfront pricing, no surprise fees.",
     address: { "@type": "PostalAddress", addressLocality: "Vancouver", addressRegion: "BC", addressCountry: "CA" },
     geo: { "@type": "GeoCoordinates", latitude: cfg.geo.lat, longitude: cfg.geo.lng },
-    areaServed: CITIES.concat(cfg.secondaryCities).map((c) => ({ "@type": "City", name: c })),
+    areaServed: CITIES.concat(EXTRA_AREAS).map((c) => ({ "@type": "City", name: c })),
     openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "07:00", closes: "20:00" }],
     knowsAbout: ["garage door spring repair", "garage door openers", "garage door cable repair", "off-track garage doors", "new garage door installation"],
   };
@@ -450,13 +454,28 @@ function openerCard(m) {
     </div>
   </div>`;
 }
+const openerAll = openerManifest.primary.concat(openerManifest.secondary);
+function openerListLd() {
+  return {
+    "@context": "https://schema.org", "@type": "ItemList",
+    name: "Residential LiftMaster garage door openers installed by Sketchy Garage Doors",
+    itemListElement: openerAll.map((m, i) => ({
+      "@type": "ListItem", position: i + 1,
+      item: {
+        "@type": "Product", name: m.name, image: DOMAIN + "/assets/openers/" + m.image,
+        description: m.blurb, brand: { "@type": "Brand", name: "LiftMaster" }, category: "Garage door opener",
+        offers: { "@type": "Offer", price: String(openerPrices[m.sku]), priceCurrency: "CAD", availability: "https://schema.org/InStock", seller: { "@id": `${DOMAIN}/#business` } },
+      },
+    })),
+  };
+}
 function openerSection() {
   return `<section class="section section--soft">
   <div class="container">
-    <div class="center" data-reveal style="max-width:680px;margin-inline:auto">
-      <span class="eyebrow">Pick the right opener</span>
-      <h2>LiftMaster openers we install</h2>
-      <p class="lead mx-auto">Real prices, installed. Every model runs the myQ app so you can open, close and check your garage from your phone — with battery-backup options for our storm-prone coast.</p>
+    <div class="center" data-reveal style="max-width:700px;margin-inline:auto">
+      <span class="eyebrow">Pick the right opener for your home</span>
+      <h2>Residential LiftMaster openers we install</h2>
+      <p class="lead mx-auto">Real prices, installed — including haul-away of your old unit and full programming. Every model runs the myQ app so you can open, close and check your garage from your phone, with battery-backup options for our storm-prone coast. Not sure which fits? We'll recommend the right one for your door and budget — no upselling.</p>
     </div>
     <div class="openers" style="margin-top:2rem;max-width:760px;margin-inline:auto">
       ${openerManifest.primary.map(openerCard).join("\n      ")}
@@ -487,8 +506,9 @@ function servicePage(key) {
   const otherServices = SERVICES_NAV.filter(([h]) => !h.includes(s.file));
 
   let extra = "";
-  if (key === "spring") extra = springTiers();
+  if (key === "spring") extra = springTiers() + springTypes();
   if (key === "opener") extra = openerSection();
+  const extraLd = key === "opener" ? [openerListLd()] : [];
 
   const body = `${pagehead({ h1: s.h1, sub: s.desc.split(". ")[0] + ".", img: s.img, alt: s.h1, crumbs })}
 ${assuranceStrip()}
@@ -528,7 +548,7 @@ ${ctaBand()}`;
 
   out(s.file, layout({
     path: "/" + s.file, title: s.title, desc: s.desc, body, ogImg: s.img,
-    jsonld: [serviceLd, breadcrumb([["Home", "/"], ["Services", "/services.html"], [s.nav, "/" + s.file]]), faqNode(s.faqs)],
+    jsonld: [serviceLd, ...extraLd, breadcrumb([["Home", "/"], ["Services", "/services.html"], [s.nav, "/" + s.file]]), faqNode(s.faqs)],
   }));
 }
 
@@ -554,6 +574,38 @@ function springTiers() {
         ${tier(sp.twoSpringsHighCycle, false, "Longest life")}
       </div>
       <p class="price-note">${I.check} Free cables on both two-spring tiers &nbsp;·&nbsp; ${I.check} Free safety inspection every job &nbsp;·&nbsp; ${I.check} Written quote before we touch a thing</p>
+    </div>
+  </div>
+</section>`;
+}
+
+function springTypes() {
+  return `<section class="section section--soft">
+  <div class="container">
+    <div class="center" data-reveal style="max-width:680px;margin-inline:auto">
+      <span class="eyebrow">Know your door</span>
+      <h2>Two kinds of residential garage door spring</h2>
+      <p class="lead mx-auto">Most homes use one of these two systems. We service and replace both — and we'll tell you which one you've got and what it'll cost before we start.</p>
+    </div>
+    <div class="grid grid--2" data-stagger style="margin-top:2.2rem">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="zoom-frame" style="border-radius:0"><img src="/assets/img/spring-torsion.webp" srcset="/assets/img/spring-torsion-480.webp 480w, /assets/img/spring-torsion-960.webp 960w, /assets/img/spring-torsion.webp 1024w" sizes="(max-width:820px) 100vw, 560px" width="1024" height="1024" loading="lazy" alt="Torsion spring mounted on the shaft above a residential garage door"></div>
+        <div style="padding:var(--s-6)">
+          <span class="tag">Most common</span>
+          <h3 style="margin-top:.7rem">Torsion springs (above the door)</h3>
+          <p>Mounted on a steel shaft above the opening, torsion springs are safer, last longer (≈15,000–20,000 cycles), and run smoother — standard on most modern double doors. They wind under huge tension, which is exactly why you never DIY them.</p>
+          <ul class="checks"><li>${I.check}<span>Longer life, smoother &amp; quieter operation</span></li><li>${I.check}<span>Best for heavier insulated &amp; double doors</span></li></ul>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="zoom-frame" style="border-radius:0"><img src="/assets/img/spring-extension.webp" srcset="/assets/img/spring-extension-480.webp 480w, /assets/img/spring-extension-960.webp 960w, /assets/img/spring-extension.webp 1024w" sizes="(max-width:820px) 100vw, 560px" width="1024" height="1024" loading="lazy" alt="Extension spring running along the horizontal track of a residential garage door"></div>
+        <div style="padding:var(--s-6)">
+          <span class="tag">Older / lighter doors</span>
+          <h3 style="margin-top:.7rem">Extension springs (along the tracks)</h3>
+          <p>Stretched along the horizontal tracks on each side, extension springs are common on older and single-car doors. They're rated for fewer cycles (≈10,000) and should always have a safety cable so a broken spring can't become a projectile.</p>
+          <ul class="checks"><li>${I.check}<span>We always fit/upgrade safety cables</span></li><li>${I.check}<span>Replaced in pairs to keep the door balanced</span></li></ul>
+        </div>
+      </div>
     </div>
   </div>
 </section>`;
@@ -641,6 +693,123 @@ const cityData = {
       ["My wooden garage door sticks and drags — repair or replace?", "Damp North Shore air swells wooden doors over time. Sometimes re-balancing and new hardware fixes the drag; if the door's warped or rotting we'll quote a weather-tight insulated replacement and give you the honest math."],
     ],
   },
+  "Port Coquitlam": {
+    img: "/assets/img/city-port-coquitlam.webp",
+    intro: `Port Coquitlam — PoCo to everyone who lives here — is a tight-knit Tri-Cities community of family homes, and family homes mean garage doors that get hammered every single day. From the flats near the Coquitlam and Pitt rivers up to the newer subdivisions around Citadel Heights, we handle spring, cable, opener and off-track repair across PoCo, same day. <strong>The river-valley damp and the daily-driver double doors here are a tough combo</strong>: moisture rusts cables and high-use springs wear out faster than the manufacturer's cycle rating suggests. You'll always get a written quote before we start.`,
+    detail: `<h2>PoCo garage doors, PoCo problems</h2>
+      <p>Port Coquitlam sits low in the Coquitlam River floodplain, so garages here see real humidity — and humidity is slow death for galvanized cables and spring wire. Add in that most PoCo homes use the garage as the everyday entrance, and you get springs reaching their cycle limit a few years early. The older homes around Central PoCo and Mary Hill often have heavier or wooden doors; the newer Citadel and Riverwood builds run big insulated double doors.</p>
+      <p>From Lincoln Park to Birchland Manor, we'll re-balance, repair or replace and get your door running quietly again.</p>`,
+    neigh: ["Central PoCo", "Citadel Heights", "Riverwood", "Mary Hill", "Lincoln Park", "Birchland Manor", "Oxford Heights", "Lower Mary Hill"],
+    faqs: [
+      ["Do you cover Port Coquitlam and the Tri-Cities?", "Yes — all of PoCo plus neighbouring Coquitlam and Port Moody. Same-day service for most repairs; text us your neighbourhood for a real arrival window."],
+      ["Why do my garage cables rust so fast in PoCo?", "Port Coquitlam's low river-valley setting means more humidity, which corrodes thin galvanized cables and spring wire. We can fit higher-grade corrosion-resistant cables and recommend a yearly inspection to catch rust early."],
+      ["My double door's spring broke after only a few years — why?", "If the garage is your main entrance, the door may cycle 6–8+ times a day, burning through a standard 10,000-cycle spring fast. We'll fit a matched pair or high-cycle springs rated to last much longer."],
+    ],
+  },
+  "Port Moody": {
+    img: "/assets/img/city-port-moody.webp",
+    intro: `Port Moody wraps around the head of Burrard Inlet, and that means two things for garage doors: salty inlet air and a lot of newer townhome-and-garage complexes around Suter Brook and Newport Village, plus established homes up toward Heritage Mountain. We service springs, cables, openers and off-track doors across Port Moody, same day. <strong>The combination of coastal salt air and forested, shaded lots rusts hardware and stiffens rollers</strong> — classic Port Moody wear we fix every week, always with the price agreed up front.`,
+    detail: `<h2>Inlet air and hillside homes</h2>
+      <p>Being right on the saltwater inlet, Port Moody garages cop more corrosive air than inland neighbours, so we see frayed cables and surface-rusted springs sooner. The newer high-density developments at Suter Brook and Newport Village have lots of openers and lighter doors that just need sensor or logic-board fixes, while the larger Heritage Mountain and Heritage Woods homes up the slope run heavier insulated doors that need correctly-sized springs.</p>
+      <p>From College Park to Pleasantside and Ioco, we'll get your door balanced, quiet and weather-ready.</p>`,
+    neigh: ["Suter Brook", "Newport Village", "Heritage Mountain", "Heritage Woods", "College Park", "Pleasantside", "Ioco", "Glenayre"],
+    faqs: [
+      ["Do you serve Port Moody?", "Yes — all of Port Moody from Suter Brook and Newport Village to Heritage Mountain and Pleasantside, plus neighbouring Coquitlam and PoCo. Same-day for most repairs."],
+      ["Does the inlet salt air really affect my garage door?", "It does. Saltwater air accelerates rust on cables, springs and steel rollers in Port Moody. We fit corrosion-resistant parts where it helps and recommend annual lubrication and inspection to extend their life."],
+      ["Can you fix the opener in my townhouse garage?", "Yes — Port Moody has lots of townhome garages. We repair all opener brands and can install a quieter belt-drive or wall-mount unit if there's living space right above the garage."],
+    ],
+  },
+  "New Westminster": {
+    img: "/assets/img/city-new-westminster.webp",
+    intro: `New West is the Lower Mainland's oldest city, and it shows in the garage doors: steep streets of heritage character homes above the Fraser, tight rear-lane garages, and a growing wave of new townhomes in Queensborough and along the waterfront. We service springs, cables, openers and off-track doors across New Westminster, same day. <strong>Heritage homes here often hide older single-spring setups, narrow tracks and original wooden doors</strong> that the river damp has swollen — exactly the kind of work we're set up for, with honest pricing on every visit.`,
+    detail: `<h2>Old city, real character (and real quirks)</h2>
+      <p>New Westminster's hilly heritage neighbourhoods — Queen's Park, Glenbrooke North, the West End — are full of older homes with detached lane garages, wooden doors, and extension-spring systems that predate modern torsion setups. Those need a careful, knowledgeable hand. Down on the flats, Queensborough and the waterfront have newer builds with standard insulated doors and myQ openers. The constant near-river humidity rusts cables across the whole city.</p>
+      <p>From Sapperton to the Brow of the Hill, we repair the old and the new — and tell you honestly when a tired wooden door is worth saving.</p>`,
+    neigh: ["Queen's Park", "Sapperton", "Glenbrooke North", "West End", "Queensborough", "Brow of the Hill", "Uptown", "Downtown / Quay"],
+    faqs: [
+      ["Do you work on older heritage homes in New West?", "All the time. Queen's Park and the West End are full of character homes with older spring and track setups and wooden lane garages. We service them, re-balance them, and quote a sympathetic replacement only if the door's truly past saving."],
+      ["Can you fit a service van down a tight New West rear lane?", "Yes — we're used to New Westminster's narrow heritage lanes and detached garages. Tell us the access when you call and we'll come prepared."],
+      ["Do you cover Queensborough too?", "We do — Queensborough, the Quay, Sapperton and all of New West. Same-day service for most repairs."],
+    ],
+  },
+  "West Vancouver": {
+    img: "/assets/img/city-west-vancouver.webp",
+    intro: `West Vancouver's homes climb the North Shore mountains with ocean views — and they tend to be larger, higher-end properties with big, often custom garage doors. We service springs, cables, openers and off-track doors across West Van, same day, with the discretion and care these homes deserve. <strong>Heavy custom and double doors need properly-sized springs, and the British Properties' steep, forested, salt-and-rain-exposed lots are hard on cables and openers</strong> — all routine for us, and always quoted in writing before any work.`,
+    detail: `<h2>Bigger doors, higher standards</h2>
+      <p>From Ambleside and Dundarave near the seawall up to the British Properties and Caulfeild, West Vancouver homes often have larger, heavier, or architecturally custom garage doors — sometimes wood-clad — that demand correctly-engineered springs and well-tuned openers to run smoothly and quietly. The elevation brings more rain and the coast brings salt, so cables and hardware corrode; the long, steep driveways make a reliable battery-backup opener genuinely worth it during winter outages.</p>
+      <p>We treat these homes (and their owners) with care, and we're precise about what we recommend — no overselling.</p>`,
+    neigh: ["Ambleside", "Dundarave", "British Properties", "Caulfeild", "Horseshoe Bay", "Cypress Park", "Sentinel Hill", "Eagle Harbour"],
+    faqs: [
+      ["Do you service larger custom garage doors in West Vancouver?", "Yes. Many West Van homes have oversized, heavy or custom (often wood-clad) doors that need correctly-sized high-cycle springs and a properly-tuned opener. We engineer the spring set to the actual door weight, not a guess."],
+      ["Is a battery-backup opener worth it on a steep West Van driveway?", "Usually yes. Winter storms knock out power on the North Shore, and you don't want to be stranded at the top or bottom of a long driveway. We fit belt-drive and wall-mount LiftMaster openers with integrated battery backup."],
+      ["Do you cover the British Properties and Horseshoe Bay?", "Yes — all of West Vancouver from Ambleside and Dundarave to the British Properties, Caulfeild and Horseshoe Bay. Same-day for most repairs."],
+    ],
+  },
+  "Delta": {
+    img: "/assets/img/city-delta.webp",
+    intro: `Delta spreads across the flat Fraser delta — Ladner, Tsawwassen and North Delta — with big skies, farmland edges and lots of single-family homes with double garages. We service springs, cables, openers and off-track doors throughout Delta, same day. <strong>Down here the wind off the water and the salt-laden coastal air are the enemy</strong>: Tsawwassen's seaside exposure especially rusts cables and springs, while North Delta's busy family homes simply wear their doors out with daily use. Honest, written pricing every time — no $19.99 bait.`,
+    detail: `<h2>Flatlands, sea air, hard-working doors</h2>
+      <p>Ladner's village homes and the newer riverside builds, Tsawwassen's seaside streets near the ferry and the beach, and North Delta's dense family neighbourhoods each bring their own wear. The closer to the water — especially in Tsawwassen — the faster salt air corrodes galvanized cables and spring wire. The exposed, windy delta also means doors take a beating, and cold snaps blowing across the flats make brittle old springs snap.</p>
+      <p>From Ladner Village to Sunshine Hills, we'll repair, re-balance or replace and fit corrosion-resistant parts where the sea air demands it.</p>`,
+    neigh: ["Ladner", "Tsawwassen", "North Delta", "Sunshine Hills", "Ladner Village", "Tsawwassen Heights", "Sunshine Woods", "Beach Grove"],
+    faqs: [
+      ["Do you serve all of Delta — Ladner, Tsawwassen and North Delta?", "Yes, the whole municipality: Ladner, Tsawwassen, North Delta and Sunshine Hills. Delta's spread out, so call or text your area and we'll confirm the soonest same-day window."],
+      ["My Tsawwassen home is near the water — why do parts rust so fast?", "Tsawwassen's seaside exposure means salt-laden air that corrodes cables, springs and rollers faster than inland. We fit higher-grade corrosion-resistant cables and recommend a yearly tune-up to catch rust before it fails."],
+      ["Do windy cold snaps really break springs out on the flats?", "They contribute — cold makes worn spring steel brittle, and a snap often comes on the first hard frost. If your spring is several years old, a quick pre-winter check is cheap insurance."],
+    ],
+  },
+  "Langley": {
+    img: "/assets/img/city-langley.webp",
+    intro: `Langley — both the City and the Township — is where suburbia meets acreage, which means everything from compact townhome garages in Willoughby to big triple-car doors and farm-shop overhead doors out toward Aldergrove and Otter. We service springs, cables, openers and off-track doors across Langley, same day. <strong>The big, frequently-used doors on Langley's newer family homes wear springs early</strong>, and acreage properties often have larger or older doors that need real expertise. Always a written quote first.`,
+    detail: `<h2>From Willoughby townhomes to Otter acreages</h2>
+      <p>Langley's explosive growth in Willoughby and Walnut Grove means a lot of newer homes with big insulated double and triple doors reaching the end of their original springs and openers all at once. Out in the Township — Murrayville, Brookswood, Aldergrove, Otter — you'll find larger lots with heavier doors, detached shops and the occasional farm overhead door, all of which we're equipped to handle. The rural-edge dust and damp are tough on rollers and tracks.</p>
+      <p>Whether it's a Fort Langley character home or a new Willoughby build, we'll size the springs right and tune the door to run smooth.</p>`,
+    neigh: ["Willoughby", "Walnut Grove", "Murrayville", "Brookswood", "Fort Langley", "Aldergrove", "Otter District", "Langley City"],
+    faqs: [
+      ["Do you cover both Langley City and the Township?", "Yes — Willoughby, Walnut Grove, Murrayville, Brookswood, Fort Langley, Aldergrove and Langley City. It's a big area, so text us your location for the soonest window."],
+      ["Can you handle triple-car and acreage shop doors?", "Absolutely. Langley has lots of triple-car garages and acreage shops with larger or overhead doors. We size springs to the real door weight and service larger openers built for the extra load."],
+      ["My newer Willoughby home already needs spring work — normal?", "Common. Builder-grade springs on big double/triple doors that cycle many times a day can wear out in a few years. We'll fit a properly-sized matched pair or high-cycle springs that last far longer."],
+    ],
+  },
+  "Maple Ridge": {
+    img: "/assets/img/city-maple-ridge.webp",
+    intro: `Maple Ridge backs onto the mountains and the Golden Ears, with a rugged mix of suburban subdivisions, rural acreages and plenty of detached shops. We service springs, cables, openers and off-track doors across Maple Ridge, same day. <strong>The wetter, forested foothills climate keeps garages damp and rusts hardware</strong>, while acreage properties out toward Albion and Whonnock often run larger or older doors that need genuine know-how. You'll always get an honest, written quote before any work begins.`,
+    detail: `<h2>Mountain-town doors</h2>
+      <p>Maple Ridge sits at the wet, forested edge of the valley, so garages here are damp and shaded — ideal conditions for rusting cables and seizing steel rollers. The town centre and newer Silver Valley and Albion builds have standard insulated double doors, while acreage homes toward Whonnock and Webster's Corners often have heavier or detached-shop doors. Cold mountain mornings are hard on aging springs, which tend to let go on the first frost.</p>
+      <p>From Hammond to Silver Valley, we'll repair, re-balance or replace and fit weather-ready parts.</p>`,
+    neigh: ["Town Centre", "Silver Valley", "Albion", "Hammond", "Whonnock", "Websters Corners", "Cottonwood", "Yennadon"],
+    faqs: [
+      ["Do you serve Maple Ridge and acreage properties?", "Yes — the town centre, Silver Valley, Albion, Hammond and rural areas toward Whonnock and Webster's Corners, including detached shop and acreage doors. Same-day for most repairs."],
+      ["Why are my rollers rusty and loud in Maple Ridge?", "The damp, shaded foothills climate rusts steel rollers and dries out lubrication quickly. We swap to sealed nylon rollers and lubricate the system so the door runs quiet and smooth."],
+      ["Do cold mountain mornings break springs?", "They're a common trigger — cold makes a worn spring brittle until it finally snaps, often on the first frosty day. A pre-winter inspection catches an aging spring before it strands your car."],
+    ],
+  },
+  "Pitt Meadows": {
+    img: "/assets/img/city-pitt-meadows.webp",
+    intro: `Pitt Meadows is a flat, friendly farm town between the Pitt and Fraser rivers, framed by the Golden Ears — and its homes range from established neighbourhoods to the newer Bonson builds, plus working acreages with shop doors. We service springs, cables, openers and off-track doors across Pitt Meadows, same day. <strong>The low, river-bordered land keeps humidity high and rusts cables and springs</strong>, and the farm-and-family mix means doors that work hard. Upfront, written pricing every visit.`,
+    detail: `<h2>Flat land, big sky, damp garages</h2>
+      <p>Sitting low between two rivers, Pitt Meadows is one of the more humid pockets of the valley, so garage cables and spring wire corrode faster here. The newer Bonson and Osprey Village developments have standard insulated doors and myQ openers, while the North Meadows acreages often have larger doors and detached shops. Wind across the flats and cold snaps off the river both shorten the life of an aging spring.</p>
+      <p>From the dike-trail neighbourhoods to the Golden Ears side of town, we'll get your door balanced, quiet and reliable.</p>`,
+    neigh: ["Bonson", "Osprey Village", "North Meadows", "Central Meadows", "Mid Meadows", "South Bonson", "Sawmill", "Highland Park"],
+    faqs: [
+      ["Do you serve Pitt Meadows?", "Yes — from Bonson and Osprey Village to North Meadows acreages and Central Meadows. Same-day service for most repairs; text us your area for a window."],
+      ["Why does my garage hardware rust quickly in Pitt Meadows?", "Pitt Meadows sits low between the Pitt and Fraser rivers, so humidity is high and it corrodes cables, springs and rollers faster. Corrosion-resistant cables plus an annual tune-up are the best defence."],
+      ["Can you service acreage shop doors in North Meadows?", "Yes — we handle larger and detached-shop doors common on Pitt Meadows acreages, sizing springs and openers to the real door weight."],
+    ],
+  },
+  "White Rock": {
+    img: "/assets/img/city-white-rock.webp",
+    intro: `White Rock is a seaside town built on a south-facing slope above Semiahmoo Bay — sunny, breezy, and right on the salt water. We service springs, cables, openers and off-track doors across White Rock and the surrounding Semiahmoo Peninsula, same day. <strong>Nowhere in Metro Vancouver is harder on garage-door hardware than a home this close to the ocean</strong>: salt air rusts cables and springs fast, and the steep streets mean garages that take real daily use. We bring corrosion-resistant parts and an honest, written quote every time.`,
+    detail: `<h2>Sea air is brutal on steel</h2>
+      <p>White Rock's charm — that beachfront, south-slope, ocean-breeze setting — is exactly what corrodes garage-door cables, springs and steel rollers faster than almost anywhere else in the region. Older bungalows up the hill often have aging spring and track setups, while the newer homes and the South Surrey/Semiahmoo edge run standard insulated doors. The steep streets also mean openers and springs that work hard every day.</p>
+      <p>From East Beach and the pier up to the uptown ridge, we fit corrosion-resistant cables and tell you honestly how much life the salt has left in the rest of the system.</p>`,
+    neigh: ["East Beach", "West Beach", "Uptown White Rock", "Hillside", "Semiahmoo", "Five Corners", "Marine Drive", "Centennial"],
+    faqs: [
+      ["Do you serve White Rock and the Semiahmoo Peninsula?", "Yes — White Rock and the surrounding South Surrey/Semiahmoo area. Same-day service for most repairs; text us your street for a real arrival window."],
+      ["My cables and springs rust really fast near the beach — why?", "White Rock is right on the salt water, and salt air is the single hardest thing on galvanized cables and spring wire. We fit higher-grade corrosion-resistant cables and recommend a yearly inspection to stay ahead of it."],
+      ["Do you work on older White Rock bungalows?", "Yes — the older hillside bungalows often have aging spring and track systems and sometimes wooden doors. We service them, re-balance them, and quote a replacement only if the salt and age have truly won."],
+    ],
+  },
 };
 
 function cityPage(name) {
@@ -705,7 +874,7 @@ function home() {
     ["How much does a typical garage door repair cost?", `It depends on the problem, but we post real ranges so there are no surprises: spring repair ${cfg.serviceRanges.spring}, opener repairs ${cfg.serviceRanges.opener.split(" · ")[0].toLowerCase()}, cable repair ${cfg.serviceRanges.cable}, off-track and rollers ${cfg.serviceRanges.offtrack}. You always get a written quote before we start. No $19.99 bait pricing.`],
     ["Do you really offer same-day service?", "For most repairs across Greater Vancouver, yes — broken springs and stuck doors are our priority calls and we carry the common parts on the van. Call or text early and we'll give you a real arrival window, not a vague all-day promise."],
     ["Are you licensed and insured?", "Yes. Garage-door work is an unregulated trade in BC (there is no provincial trade licence), so we're precise about what \"licensed\" means: we hold a municipal business licence, carry commercial liability insurance, and are WorkSafeBC-covered. We'll never imply a trade certificate that doesn't exist."],
-    ["What areas do you serve?", "All of Greater Vancouver — Vancouver, Burnaby, Surrey, Richmond, Coquitlam and North Vancouver have their own pages, and we also cover Port Coquitlam, Port Moody, New Westminster, West Vancouver, Delta, Langley, Maple Ridge, Pitt Meadows and White Rock."],
+    ["What areas do you serve?", "All of Greater Vancouver. We have dedicated local pages for 15 cities — Vancouver, Burnaby, Surrey, Richmond, Coquitlam, North Vancouver, Port Coquitlam, Port Moody, New Westminster, West Vancouver, Delta, Langley, Maple Ridge, Pitt Meadows and White Rock — plus the smaller communities in between (Tsawwassen, Ladner, Anmore, Belcarra, Lions Bay)."],
     ["How do I avoid getting scammed on a garage door repair?", "Watch for too-good-to-be-true ad pricing, no written estimate, pressure to replace everything at once, unmarked vehicles, and cash-only demands. Insist on a written quote before work starts and a company that's insured and WorkSafeBC-covered. (That's the whole reason we exist.)"],
   ];
   const serviceCards = [
@@ -819,7 +988,7 @@ ${assuranceStrip()}
     <ul class="coverage-list" data-stagger style="justify-content:center;margin-top:2rem">
       ${CITIES.map((c) => `<li><a href="/service-areas/${citySlug(c)}.html">${c}</a></li>`).join("")}
     </ul>
-    <p class="center" style="margin-top:1.2rem;color:rgba(255,255,255,.7)">Also: Port Coquitlam · Port Moody · New Westminster · West Vancouver · Delta · Langley · Maple Ridge · Pitt Meadows · White Rock</p>
+    <p class="center" style="margin-top:1.2rem;color:rgba(255,255,255,.7)">Plus the smaller communities in between: ${EXTRA_AREAS.join(" · ")}.</p>
   </div>
 </section>
 
@@ -877,7 +1046,7 @@ ${assuranceStrip()}
     </div>
     <div class="center" data-reveal style="margin-top:2.5rem">
       <h3>Also serving</h3>
-      <ul class="coverage-list" style="justify-content:center">${cfg.secondaryCities.map((c) => `<li><span>${c}</span></li>`).join("")}</ul>
+      <ul class="coverage-list" style="justify-content:center">${EXTRA_AREAS.map((c) => `<li><span>${c}</span></li>`).join("")}</ul>
       <p style="margin-top:1rem;color:var(--ink-soft)">Not sure if we reach you? ${callBtn("btn btn--ghost").replace('class="btn btn--ghost"', 'class="btn btn--ghost" style="margin-top:.5rem"')}</p>
     </div>
   </div>
