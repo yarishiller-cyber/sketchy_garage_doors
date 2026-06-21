@@ -1,0 +1,13 @@
+{
+  "name": "Sketchy Garage Doors",
+  "short_name": "Sketchy",
+  "description": "Honest garage-door repair across Greater Vancouver. Sketchy name, spotless work.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#15171a",
+  "theme_color": "#15171a",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/assets/og/og-default.png", "sizes": "1024x538", "type": "image/png" }
+  ]
+}

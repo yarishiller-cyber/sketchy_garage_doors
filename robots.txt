@@ -1,0 +1,25 @@
+# Sketchy Garage Doors — robots.txt
+# Allow everyone, including AI search/answer engines (they drive citations).
+
+User-agent: *
+Allow: /
+
+# Named AI search / RAG crawlers (explicit allow)
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://sketchygaragedoors.ca/sitemap.xml

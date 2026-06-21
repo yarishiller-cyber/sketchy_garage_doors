@@ -1,0 +1,9 @@
+/* TEAM */
+  Sketchy Garage Doors — Greater Vancouver, BC
+  Contact: info@sketchygaragedoors.ca
+  Phone: 778-800-0769
+
+/* SITE */
+  Standards: HTML5, CSS3, vanilla JS
+  Stack: Static (no build), Motion (CDN) for animation
+  Sketchy name. Spotless work.

@@ -1,0 +1,89 @@
+{
+  "_comment": "Sketchy Garage Doors — gva-wide. Drives copy/SEO/design/imagery/pricing. Keep DISTINCT from siblings (see _shared/sites-registry.md).",
+
+  "brandName": "Sketchy Garage Doors",
+  "domain": "sketchygaragedoors.ca",
+  "repo": "sketchy_garage_doors",
+
+  "coverage": "gva-wide",
+  "serviceFocus": null,
+  "town": "Greater Vancouver",
+  "region": "BC",
+  "coverageTowns": ["Vancouver", "Burnaby", "Surrey", "Richmond", "Coquitlam", "North Vancouver"],
+  "_coverageTowns_note": "Started with 6 priority cities (gva-wide: start 3-5, expand to ~20). Each gets a unique service-area page. Others listed in coverage section + schema.",
+  "secondaryCities": ["Port Coquitlam", "Port Moody", "New Westminster", "West Vancouver", "Delta", "Langley", "Maple Ridge", "Pitt Meadows", "White Rock"],
+  "neighbourhoods": [],
+  "adjacentAreas": [],
+  "geo": { "lat": 49.2488, "lng": -123.0016 },
+
+  "email": "info@sketchygaragedoors.ca",
+  "phone": "+1-778-800-0769",
+  "phoneDisplay": "778-800-0769",
+  "phoneHref": "+17788000769",
+  "smsBody": "Hi Sketchy — my garage door needs help. My issue is: ",
+  "address": { "street": "", "city": "Vancouver", "region": "BC", "postalCode": "", "country": "CA" },
+  "hours": "Mo-Su 07:00-20:00",
+  "hoursDisplay": "7 days a week, 7am–8pm (after-hours text-back)",
+  "priceRange": "$$",
+
+  "emphasis": "residential",
+  "primaryKeyword": "garage door repair Greater Vancouver",
+
+  "voice": "self-aware/edgy — 'Sketchy name. Spotless work.' Resolve the joke instantly; pair every laugh with a hard trust signal. Radical transparency, anti-scam.",
+  "signatureHook": "Sketchy name. Spotless work.",
+  "localDetails": ["coastal rain & salt air rusting cables and springs", "older East Van character homes", "North Shore damp", "Richmond flats", "Surrey new-builds", "cold snaps spiking spring failures"],
+
+  "design": {
+    "layoutVariant": "layout-c",
+    "tokens": {
+      "--brand": "#15171a",
+      "--brand-dark": "#0c0d0f",
+      "--brand-light": "#f4f5f6",
+      "--accent": "#ffd21e",
+      "--accent-dark": "#e0b300",
+      "--accent-rgb": "255,210,30",
+      "--font-head": "\"Space Grotesk\", system-ui, sans-serif",
+      "--font-body": "\"Inter\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "motionPersonality": "crisp/snappy with hazard-tape accents; tight reveals, no slow cinematic drift"
+  },
+
+  "imagery": {
+    "styleBlock": "photorealistic documentary photography, shot on 35mm, natural Pacific-Northwest daylight, soft overcast, realistic skin and worn materials, candid, ordinary true-to-life working people, no studio lighting, no retouching, slightly muted colours",
+    "brandBlock": "charcoal near-black work jackets with small hazard-yellow chest logo + hazard-yellow caps; Ford Transit wrapped matte near-black with hazard-yellow diagonal stripe, 'SKETCHY GARAGE DOORS' + 'info@sketchygaragedoors.ca' on the side, BC plate; near-black + hazard yellow; NEVER a phone number on the wrap",
+    "vanRef": "assets/brand/van-ref.png",
+    "techRef": "assets/brand/tech-ref.png"
+  },
+
+  "springPricing": {
+    "_note": "Distinct from siblings. Hidden behind footer toggle. Marked up as Offer/PriceSpecification.",
+    "currency": "CAD",
+    "singleSpring": { "label": "Single spring replacement", "price": "189", "blurb": "Replace one broken torsion spring. Best when the other spring is newer and healthy." },
+    "twoSpringsNewCables": { "label": "Two springs + new cables", "price": "329", "includes": ["new cables free", "free safety inspection"], "blurb": "Replace both springs as a matched pair and install fresh cables — the smart standard repair." },
+    "twoSpringsHighCycle": { "label": "Two high-cycle springs", "price": "429", "includes": ["new cables free", "longer-life springs", "free safety inspection"], "blurb": "Premium springs rated roughly double the cycles — for busy doors that go up and down all day. Cables included." },
+    "freeWithEveryJob": ["Free cables on both 2-spring tiers", "Free safety inspection with every spring job", "Written quote before we touch a thing"],
+    "rangeNote": "Most Lower Mainland spring jobs land between $189 and $429. No $19.99 bait. No surprise fees."
+  },
+
+  "serviceRanges": {
+    "spring": "$189–$429",
+    "opener": "Repairs $129–$249 · Install from $399",
+    "cable": "$159–$229",
+    "offtrack": "$149–$289",
+    "newdoor": "From $1,290 installed",
+    "maintenance": "$129 flat tune-up",
+    "emergency": "Same-day service · honest after-hours rates"
+  },
+
+  "partnerProgram": {
+    "enabled": true,
+    "headline": "We get more calls than we can take — partner with us for vetted overflow jobs",
+    "fields": ["name", "company", "trade/service", "service area", "phone", "email", "capacity/notes"]
+  },
+
+  "features": {
+    "floatingCallText": true,
+    "footerPriceToggle": true,
+    "dualHeroImages": true
+  }
+}
