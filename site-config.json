@@ -58,19 +58,19 @@
   "springPricing": {
     "_note": "Distinct from siblings. Hidden behind footer toggle. Marked up as Offer/PriceSpecification.",
     "currency": "CAD",
-    "singleSpring": { "label": "Single spring replacement", "price": "189", "blurb": "Replace one broken torsion spring. Best when the other spring is newer and healthy." },
-    "twoSpringsNewCables": { "label": "Two springs + new cables", "price": "329", "includes": ["new cables free", "free safety inspection"], "blurb": "Replace both springs as a matched pair and install fresh cables — the smart standard repair." },
-    "twoSpringsHighCycle": { "label": "Two high-cycle springs", "price": "429", "includes": ["new cables free", "longer-life springs", "free safety inspection"], "blurb": "Premium springs rated roughly double the cycles — for busy doors that go up and down all day. Cables included." },
+    "singleSpring": { "label": "Single spring replacement", "price": "739", "blurb": "Replace one broken torsion spring. Best when the other spring is newer and healthy." },
+    "twoSpringsNewCables": { "label": "Two springs + new cables", "price": "851", "includes": ["new cables free", "free safety inspection"], "blurb": "Replace both springs as a matched pair and install fresh cables — the smart standard repair." },
+    "twoSpringsHighCycle": { "label": "Two high-cycle springs", "price": "1,274", "includes": ["new cables free", "longer-life springs", "free safety inspection"], "blurb": "Premium springs rated roughly double the cycles — for busy doors that go up and down all day. Cables included." },
     "freeWithEveryJob": ["Free cables on both 2-spring tiers", "Free safety inspection with every spring job", "Written quote before we touch a thing"],
-    "rangeNote": "Most Lower Mainland spring jobs land between $189 and $429. No $19.99 bait. No surprise fees."
+    "rangeNote": "Most Lower Mainland spring jobs land between $739 and $1,274. No $19.99 bait. No surprise fees."
   },
 
   "serviceRanges": {
-    "spring": "$189–$429",
-    "opener": "Repairs $129–$249 · Install from $399",
+    "spring": "$739–$1,274",
+    "opener": "Repairs $129–$249 · Install from $1,311",
     "cable": "$159–$229",
     "offtrack": "$149–$289",
-    "newdoor": "From $1,290 installed",
+    "newdoor": "From $3,647 installed",
     "maintenance": "$129 flat tune-up",
     "emergency": "Same-day service · honest after-hours rates"
   },
