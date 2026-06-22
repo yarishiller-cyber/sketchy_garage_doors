@@ -490,7 +490,7 @@ const services = {
 
 /* ---------------- opener picker ---------------- */
 const openerManifest = JSON.parse(readFileSync("/home/user/garagedoors-shared/assets/liftmaster/manifest.json"));
-const openerPrices = { "2220L": 1311, "6580L": 1448, "98022L": 1939, "2420L": 1311, "4690": 1448, "6690L": 1448, "98032": 1939 };
+const openerPrices = { "2220L": 1311, "6580L": 1448, "98022L": 2155, "2420L": 1384, "4690": 1466, "6690L": 1523, "98032": 1939 };
 function openerCard(m) {
   const price = openerPrices[m.sku];
   const priceFmt = price.toLocaleString("en-CA");
