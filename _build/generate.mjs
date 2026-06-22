@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260621e";
+const ASSETV = "20260622a";
 const TODAY = "2026-06-21";
 
 /* ---------------- icons ---------------- */
@@ -564,7 +564,7 @@ function servicePage(key) {
   const otherServices = SERVICES_NAV.filter(([h]) => !h.includes(s.file));
 
   let extra = "";
-  if (key === "spring") extra = springTiers() + springTypes();
+  if (key === "spring") extra = springTiers() + springTrustRow() + springTypes();
   if (key === "opener") extra = openerSection();
   const extraLd = key === "opener" ? [openerListLd()] : [];
 
@@ -633,6 +633,20 @@ function springTiers() {
       </div>
       <p class="price-note">${I.check} Free cables on both two-spring tiers &nbsp;·&nbsp; ${I.check} Free safety inspection every job &nbsp;·&nbsp; ${I.check} Written quote before we touch a thing</p>
     </div>
+  </div>
+</section>`;
+}
+
+function springTrustRow() {
+  return `<section class="section section--tight">
+  <div class="container" data-reveal>
+    <div class="gbb-trust">
+      <div class="gbb-trust-item"><strong>$0</strong><span>Service-call fee</span></div>
+      <div class="gbb-trust-item"><strong>$0</strong><span>After-hours surcharge</span></div>
+      <div class="gbb-trust-item"><strong>$0</strong><span>Weekend / holiday markup</span></div>
+      <div class="gbb-trust-item"><strong>$0</strong><span>Diagnostic (with completed work)</span></div>
+    </div>
+    <p class="gbb-promise">The flat-rate price we quote is the price you pay. We don't upsell on the truck — if we find something else, you decide. (Sketchy name. Honest invoice.)</p>
   </div>
 </section>`;
 }

@@ -302,6 +302,14 @@ svg { width: 1.25em; height: 1.25em; flex: none; }
 .fab a:hover { text-decoration: none; }
 .fab svg { width: 1.25rem; height: 1.25rem; }
 
+/* ---- Spring page: $0 trust row ---- */
+.gbb-trust { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-top: 28px; padding: 20px; background: #15171a; border-radius: 14px; color: #fff; }
+@media (min-width: 720px) { .gbb-trust { grid-template-columns: repeat(4,1fr); } }
+.gbb-trust-item { text-align: center; }
+.gbb-trust-item strong { display: block; font-size: 28px; font-weight: 800; color: #ffd21e; line-height: 1; }
+.gbb-trust-item span { display: block; font-size: 13px; margin-top: 4px; color: rgba(255,255,255,.85); }
+.gbb-promise { margin-top: 16px; font-size: 14px; line-height: 1.55; color: var(--ink, #333); text-align: center; }
+
 /* ---- Footer ---- */
 .site-footer { background: var(--brand-dark); color: rgba(255,255,255,.72); padding-block: var(--s-8) var(--s-7); }
 .site-footer h4 { color: #fff; font-size: var(--t-base); margin-bottom: var(--s-3); }
