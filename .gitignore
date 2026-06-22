@@ -1,6 +1,8 @@
 # build artifacts / local only
 _build/*.log
 node_modules/
+package.json
+package-lock.json
 *.tmp
 .DS_Store
 # generated intermediate PNGs (we ship .webp)
