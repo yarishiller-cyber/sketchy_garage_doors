@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260622c";
+const ASSETV = "20260622d";
 const TODAY = "2026-06-22";
 const UPDATED_LABEL = "June 2026"; // visible freshness byline (FLEET-STANDARDS §7)
 const byline = () => `<p class="updated-byline" style="font-size:.85rem;color:var(--ink-soft);margin:.2rem 0 0">Updated ${UPDATED_LABEL} · written &amp; reviewed by the Sketchy Garage Doors team</p>`;
@@ -48,6 +48,18 @@ const I = {
    Degrades gracefully with JS off: the generic label simply stays visible. */
 const px = (generic, priced, cls = "price-tag") =>
   `<span class="${cls}" data-px="${String(priced).replace(/"/g, "&quot;")}">${generic}</span>`;
+
+/* Hidden price ranges (FLEET-STANDARDS §2): show a neutral label by default,
+   reveal the dollar range only via the footer "Pricing" toggle. The canonical
+   $ values live solely in data-px (never in default text or meta). */
+const PX_RANGE = {
+  spring: px("Quoted on site", "$739–$1,274"),
+  opener: px("Quoted on site", "From $1,311"),
+  newdoor: px("Quoted on site", "From $3,647"),
+  springSingle: px("Quoted on site", "$739"),
+  newdoorFrom: px("Quoted on site", "From $3,647 installed"),
+  openerFrom: px("Quoted on site", "From $1,311 installed"),
+};
 
 const callBtn = (cls = "btn btn--primary") => `<a class="${cls}" href="tel:${TEL}" data-evt="call">${I.phone}<span>Call ${TEL_DISPLAY}</span></a>`;
 const textBtn = (cls = "btn btn--on-dark") => `<a class="${cls}" href="sms:${TEL}?&body=${SMS_BODY}" data-evt="text">${I.chat}<span>Text us</span></a>`;
@@ -378,13 +390,13 @@ const services = {
     nav: "Spring repair",
     h1: "Garage Door Spring Repair Across Greater Vancouver",
     title: "Garage Door Spring Repair Greater Vancouver | Sketchy",
-    desc: "Broken garage door spring? Same-day torsion & extension replacement across Metro Vancouver — single from $739, two + free cables from $851. Guaranteed.",
+    desc: "Broken garage door spring? Same-day torsion & extension replacement across Metro Vancouver — flat-rate tiers, free cables on two-spring jobs, written quote first. Guaranteed.",
     img: "/assets/img/svc-spring.webp",
     serviceType: "Garage Door Spring Repair",
     range: cfg.serviceRanges.spring,
-    lead: `A broken garage door spring is the most common — and most urgent — repair we do. When a torsion spring snaps, the door becomes far too heavy for the opener (or you) to lift safely, often trapping a car inside. <strong>We replace broken springs the same day across Greater Vancouver</strong>, with real prices posted up front: a single spring from <span class="price-amt">$${cfg.springPricing.singleSpring.price}</span>, or both springs replaced as a matched pair with <strong>free new cables</strong> from <span class="price-amt">$${cfg.springPricing.twoSpringsNewCables.price}</span>. Every spring job includes a free safety inspection and a written quote before we start. No $19.99 bait, no surprise fees — just the spring you actually need, done right and guaranteed.`,
+    lead: `A broken garage door spring is the most common — and most urgent — repair we do. When a torsion spring snaps, the door becomes far too heavy for the opener (or you) to lift safely, often trapping a car inside. <strong>We replace broken springs the same day across Greater Vancouver</strong>, with real, flat-rate tiers and a written quote before we start: a single spring, or both springs replaced as a matched pair with <strong>free new cables</strong>. Every spring job includes a free safety inspection — and you can reveal exact prices any time via the Pricing button below. No $19.99 bait, no surprise fees — just the spring you actually need, done right and guaranteed.`,
     faqs: [
-      ["How much does it cost to replace a garage door spring in Vancouver?", `Most spring jobs in the Lower Mainland land between $${cfg.springPricing.singleSpring.price} and $${cfg.springPricing.twoSpringsHighCycle.price}. A single torsion spring replacement starts at $${cfg.springPricing.singleSpring.price}; replacing both springs as a matched pair with new cables included starts at $${cfg.springPricing.twoSpringsNewCables.price}; longer-life high-cycle springs are $${cfg.springPricing.twoSpringsHighCycle.price} with cables free. You get a written quote before any work begins.`],
+      ["How much does it cost to replace a garage door spring in Vancouver?", `We post flat-rate spring tiers up front (reveal exact figures with the Pricing button): a single torsion spring replacement, both springs replaced as a matched pair with new cables included, or longer-life high-cycle springs with cables free. You get a written quote before any work begins. ${px("Tap Pricing to see figures", "Single $739 · pair $851 · high-cycle $1,274")}`],
       ["Can you replace a garage door spring the same day?", "Yes — broken springs are our priority call. We stock the common torsion sizes on the van and reach most of Metro Vancouver the same day. Call or text us with a photo of the spring and we'll confirm a window."],
       ["Should I replace one spring or both?", "If your door has two springs and one breaks, the second is usually close behind (they wear at the same rate). Replacing both as a matched pair avoids a second call-out and keeps the door balanced — that's why our two-spring tier includes free cables. If your other spring is genuinely new, we'll happily just do the one."],
       ["Why are high-cycle springs more expensive?", "A standard spring is rated for roughly 10,000 open/close cycles (about 7 years at average use). High-cycle springs are wound from heavier wire and rated for roughly double that, so they last far longer on busy doors. They cost more up front but are cheaper over the life of the door."],
@@ -397,11 +409,11 @@ const services = {
     nav: "Opener repair & install",
     h1: "Garage Door Opener Repair & Installation",
     title: "Garage Door Opener Repair & Installation Vancouver | Sketchy",
-    desc: "Opener won't open, reversing or beeping? We repair & install LiftMaster myQ openers across Metro Vancouver. Repairs $129–$249, new from $1,311. Same-day.",
+    desc: "Opener won't open, reversing or beeping? We repair & install LiftMaster myQ openers across Metro Vancouver. Repairs $129–$249, new openers installed. Same-day.",
     img: "/assets/img/svc-opener.webp",
     serviceType: "Garage Door Opener Repair and Installation",
     range: cfg.serviceRanges.opener,
-    lead: `If your opener hums but won't lift, reverses halfway, beeps, or ignores the remote, we'll diagnose it on the spot and tell you straight whether it's a quick fix or time for a new unit. <strong>Opener repairs across Greater Vancouver run $129–$249</strong>; a brand-new LiftMaster opener starts at <strong>$1,311 installed</strong>. Many "dead" openers are actually a tripped safety sensor, a stripped drive gear, a dead backup battery, or a worn logic board — all things we carry parts for. When replacement is the smarter call, we install LiftMaster's myQ Wi-Fi line so you can open, close and check the garage from your phone. Written quote first, every time.`,
+    lead: `If your opener hums but won't lift, reverses halfway, beeps, or ignores the remote, we'll diagnose it on the spot and tell you straight whether it's a quick fix or time for a new unit. <strong>Opener repairs across Greater Vancouver run $129–$249</strong>; a brand-new LiftMaster opener is installed flat-rate (reveal model prices with the Pricing button, or see the list below). Many "dead" openers are actually a tripped safety sensor, a stripped drive gear, a dead backup battery, or a worn logic board — all things we carry parts for. When replacement is the smarter call, we install LiftMaster's myQ Wi-Fi line so you can open, close and check the garage from your phone. Written quote first, every time.`,
     openers: true,
     faqs: [
       ["Why does my garage door open then close again right away?", "That's almost always the safety sensors (photo-eyes) near the floor. If they're misaligned, dirty, or have a blocked beam, the opener reverses to protect anyone underneath. We realign and test them as part of a standard opener visit — often a quick, inexpensive fix."],
@@ -450,13 +462,13 @@ const services = {
     nav: "New door installation",
     h1: "New Garage Door Installation",
     title: "New Garage Door Installation Vancouver | Sketchy",
-    desc: "Replacing a tired or damaged garage door? Insulated steel, aluminium-glass & carriage doors installed across Metro Vancouver from $3,647. Free quotes.",
+    desc: "Replacing a tired or damaged garage door? Insulated steel, aluminium-glass & carriage doors supplied & installed across Metro Vancouver. Free on-site quotes.",
     img: "/assets/img/svc-newdoor.webp",
     serviceType: "Garage Door Installation",
     range: cfg.serviceRanges.newdoor,
-    lead: `When a door is rusted, dented beyond repair, or just dated, a new one is one of the highest-return upgrades a Vancouver home can make — it's the biggest moving thing on your house. <strong>We supply and install new garage doors across Greater Vancouver from $3,647</strong>, including haul-away of the old door and fresh hardware. We fit insulated steel doors (a smart move for our wet, cool winters and garages used as gyms or shops), modern aluminium-and-glass doors for contemporary builds, and carriage-style doors for character homes. We measure on-site, give you a written all-in quote with no vague "from" pricing, and install it level, sealed and balanced.`,
+    lead: `When a door is rusted, dented beyond repair, or just dated, a new one is one of the highest-return upgrades a Vancouver home can make — it's the biggest moving thing on your house. <strong>We supply and install new garage doors across Greater Vancouver</strong>, including haul-away of the old door and fresh hardware (reveal our starting price with the Pricing button below). We fit insulated steel doors (a smart move for our wet, cool winters and garages used as gyms or shops), modern aluminium-and-glass doors for contemporary builds, and carriage-style doors for character homes. We measure on-site, give you a written all-in quote with no vague "from" pricing, and install it level, sealed and balanced.`,
     faqs: [
-      ["How much does a new garage door cost installed in Vancouver?", "A standard single insulated steel door starts around $3,647 installed; a double door or a premium aluminium-glass or carriage-style door costs more. We quote the all-in number — door, tracks, hardware, install and haul-away — after a free on-site measure, so there are no surprises."],
+      ["How much does a new garage door cost installed in Vancouver?", `A standard single insulated steel door is our starting point; a double door or a premium aluminium-glass or carriage-style door costs more. We quote the all-in number — door, tracks, hardware, install and haul-away — after a free on-site measure, so there are no surprises. ${px("Tap Pricing to see the starting figure", "From $3,647 installed")}`],
       ["Should I get an insulated garage door?", "On the coast, usually yes. Insulated (polyurethane-core) doors hold heat far better for garages used as workshops, gyms or rooms above living space, dampen street noise, and are more rigid and dent-resistant. We'll talk through R-values for your situation."],
       ["How long does a garage door installation take?", "Most single-door replacements are done in 3–5 hours; doubles or jobs needing new tracks and an opener take most of a day. We program the opener and balance the door before we leave."],
       ["Do you remove and dispose of my old door?", "Yes — haul-away and disposal of the old door, tracks and hardware is included in our install quote. You're left with a clean garage and a working door."],
@@ -585,7 +597,7 @@ ${assuranceStrip()}
 <section class="section">
   <div class="container split">
     <div data-reveal>
-      <span class="eyebrow">${s.nav} · ${s.range}</span>
+      <span class="eyebrow">${s.nav} · ${PX_RANGE[key] || s.range}</span>
       <h2>${s.h1.replace(" Across Greater Vancouver", "")}</h2>
       ${byline()}
       <p class="lead">${s.lead}</p>
@@ -638,7 +650,7 @@ function springTiers() {
     <div class="priceblock" data-reveal>
       <span class="eyebrow">Real prices · no $19.99 bait</span>
       <h2>Spring repair pricing, posted up front</h2>
-      <p class="lead">${sp.rangeNote} Pick the tier that fits — we'll confirm on site and never start without your OK.</p>
+      <p class="lead">Flat-rate spring tiers, no $19.99 bait and no surprise fees. ${px("Tap Pricing below to reveal figures", "Most jobs land between $739 and $1,274")} — pick the tier that fits; we'll confirm on site and never start without your OK.</p>
       <div class="tier-grid">
         ${tier(sp.singleSpring, false, "Quick fix")}
         ${tier(sp.twoSpringsNewCables, true, "Most popular")}
@@ -957,18 +969,18 @@ ${ctaBand(`Need a garage door fixed in ${name} today?`)}`;
 function home() {
   const homeFaqs = [
     ["Wait — is the name a joke?", "Mostly. \"Sketchy\" is a wink at how easy it is to get burned by garage-door companies — the $19.99 ads, the mystery fees, the unmarked vans. We named ourselves after the thing you're worried about, then built the opposite: upfront written pricing, a marked van, licensed and insured techs, and a workmanship guarantee. Sketchy name. Spotless work."],
-    ["How much does a typical garage door repair cost?", `It depends on the problem, but we post real ranges so there are no surprises: spring repair ${cfg.serviceRanges.spring}, opener repairs ${cfg.serviceRanges.opener.split(" · ")[0].toLowerCase()}, cable repair ${cfg.serviceRanges.cable}, off-track and rollers ${cfg.serviceRanges.offtrack}. You always get a written quote before we start. No $19.99 bait pricing.`],
+    ["How much does a typical garage door repair cost?", `It depends on the problem, but we post real ranges so there are no surprises: spring repair ${PX_RANGE.spring}, opener repairs ${cfg.serviceRanges.opener.split(" · ")[0].toLowerCase()}, cable repair ${cfg.serviceRanges.cable}, off-track and rollers ${cfg.serviceRanges.offtrack}. You always get a written quote before we start. No $19.99 bait pricing.`],
     ["Do you really offer same-day service?", "For most repairs across Greater Vancouver, yes — broken springs and stuck doors are our priority calls and we carry the common parts on the van. Call or text early and we'll give you a real arrival window, not a vague all-day promise."],
     ["Are you licensed and insured?", "Yes. Garage-door work is an unregulated trade in BC (there is no provincial trade licence), so we're precise about what \"licensed\" means: we hold a municipal business licence, carry commercial liability insurance, and are WorkSafeBC-covered. We'll never imply a trade certificate that doesn't exist."],
     ["What areas do you serve?", "All of Greater Vancouver. We have dedicated local pages for 15 cities — Vancouver, Burnaby, Surrey, Richmond, Coquitlam, North Vancouver, Port Coquitlam, Port Moody, New Westminster, West Vancouver, Delta, Langley, Maple Ridge, Pitt Meadows and White Rock — plus the smaller communities in between (Tsawwassen, Ladner, Anmore, Belcarra, Lions Bay)."],
     ["How do I avoid getting scammed on a garage door repair?", "Watch for too-good-to-be-true ad pricing, no written estimate, pressure to replace everything at once, unmarked vehicles, and cash-only demands. Insist on a written quote before work starts and a company that's insured and WorkSafeBC-covered. (That's the whole reason we exist.)"],
   ];
   const serviceCards = [
-    ["spring", I.coil, "Broken spring repair", "The #1 emergency. Same-day torsion & extension spring replacement from $739.", "/garage-door-spring-repair.html"],
-    ["opener", I.gear, "Opener repair & install", "Won't open, reversing, or beeping? Repairs from $129; new LiftMaster myQ from $1,311.", "/garage-door-opener-repair-installation.html"],
+    ["spring", I.coil, "Broken spring repair", `The #1 emergency. Same-day torsion &amp; extension spring replacement, flat-rate ${px("(tap Pricing)", "from $739")}.`, "/garage-door-spring-repair.html"],
+    ["opener", I.gear, "Opener repair & install", `Won't open, reversing, or beeping? Repairs from $129; new LiftMaster myQ openers ${px("(tap Pricing)", "from $1,311")}.`, "/garage-door-opener-repair-installation.html"],
     ["cable", I.coil, "Cable repair", "Frayed or snapped cable, door hanging crooked? Fixed safely from $159.", "/garage-door-cable-repair.html"],
     ["offtrack", I.track, "Off-track & rollers", "Door jammed, leaning or grinding? We re-rail it and fit quiet rollers from $149.", "/garage-door-off-track-roller-repair.html"],
-    ["newdoor", I.door, "New garage doors", "Insulated steel, modern glass & carriage doors installed from $3,647.", "/new-garage-door-installation.html"],
+    ["newdoor", I.door, "New garage doors", `Insulated steel, modern glass &amp; carriage doors installed, ${px("(tap Pricing)", "from $3,647")}.`, "/new-garage-door-installation.html"],
     ["maintenance", I.wrench, "Maintenance & tune-up", "Flat $129 tune-up — balance, lube, safety check. Stop problems before they snap.", "/garage-door-maintenance-tune-up.html"],
     ["emergency", I.bolt, "Emergency repair", "Door stuck open or car trapped? Fast same-day help with honest after-hours rates.", "/emergency-garage-door-repair.html"],
   ];
@@ -1024,8 +1036,8 @@ ${assuranceStrip()}
         <h2>Honest pricing. No $19.99 bait, no mystery fees.</h2>
         <p>The garage-door trade is full of too-good-to-be-true ads that turn into a $600 invoice once the tech is in your driveway. We do the opposite: real ranges posted on the site, and a written quote you approve before we touch a thing.</p>
         <ul class="checks">
-          <li>${I.check}<span>Spring repair <strong style="color:#fff">${cfg.serviceRanges.spring}</strong> — single to high-cycle</span></li>
-          <li>${I.check}<span>Opener repair <strong style="color:#fff">${cfg.serviceRanges.opener.split(" · ")[0]}</strong>; new from $1,311 installed</span></li>
+          <li>${I.check}<span>Spring repair <strong style="color:#fff">${PX_RANGE.spring}</strong> — single to high-cycle</span></li>
+          <li>${I.check}<span>Opener repair <strong style="color:#fff">${cfg.serviceRanges.opener.split(" · ")[0]}</strong>; new openers <strong style="color:#fff">${PX_RANGE.openerFrom}</strong></span></li>
           <li>${I.check}<span>Cable repair <strong style="color:#fff">${cfg.serviceRanges.cable}</strong> · Off-track <strong style="color:#fff">${cfg.serviceRanges.offtrack}</strong></span></li>
           <li>${I.check}<span>Free safety inspection with every spring job</span></li>
         </ul>
@@ -1095,11 +1107,11 @@ ${ctaBand("The name's the only sketchy thing. Let's fix your door.")}`;
    ===================================================================== */
 function servicesHub() {
   const cards = [
-    [I.coil, "Spring repair", services.spring.desc.split(".")[0] + ".", "/garage-door-spring-repair.html", cfg.serviceRanges.spring],
-    [I.gear, "Opener repair & installation", "Repair or replace any opener; new LiftMaster myQ openers installed.", "/garage-door-opener-repair-installation.html", cfg.serviceRanges.opener],
+    [I.coil, "Spring repair", services.spring.desc.split(".")[0] + ".", "/garage-door-spring-repair.html", PX_RANGE.spring],
+    [I.gear, "Opener repair & installation", "Repair or replace any opener; new LiftMaster myQ openers installed.", "/garage-door-opener-repair-installation.html", px("Quoted on site", cfg.serviceRanges.opener)],
     [I.coil, "Cable repair", "Frayed or snapped cables replaced safely as a balanced pair.", "/garage-door-cable-repair.html", cfg.serviceRanges.cable],
     [I.track, "Off-track & roller repair", "Re-rail jammed doors and fit quiet, long-life nylon rollers.", "/garage-door-off-track-roller-repair.html", cfg.serviceRanges.offtrack],
-    [I.door, "New garage door installation", "Insulated steel, aluminium-glass and carriage doors, supplied & fitted.", "/new-garage-door-installation.html", cfg.serviceRanges.newdoor],
+    [I.door, "New garage door installation", "Insulated steel, aluminium-glass and carriage doors, supplied & fitted.", "/new-garage-door-installation.html", PX_RANGE.newdoor],
     [I.wrench, "Maintenance & tune-up", "Annual flat-rate service to keep the door quiet, balanced and safe.", "/garage-door-maintenance-tune-up.html", cfg.serviceRanges.maintenance],
     [I.bolt, "Emergency repair", "Fast same-day help when the door won't open or close.", "/emergency-garage-door-repair.html", cfg.serviceRanges.emergency],
   ];
@@ -1248,7 +1260,7 @@ ${ctaBand()}`;
 function faqPage() {
   const faqs = [
     ["Is the name actually a joke?", "Yes — and it's the only joke. \"Sketchy\" pokes fun at how easy it is to get burned by garage-door companies. Everything else is dead serious: business-licensed, insured, WorkSafeBC-covered, written quotes, and a workmanship guarantee. Sketchy name, spotless work."],
-    ["How much does garage door repair cost in Greater Vancouver?", `We post real ranges so there are no surprises. Spring repair ${cfg.serviceRanges.spring}; opener repairs ${cfg.serviceRanges.opener.split(" · ")[0].toLowerCase()} with new openers from $1,311 installed; cable repair ${cfg.serviceRanges.cable}; off-track and rollers ${cfg.serviceRanges.offtrack}; a flat $129 tune-up; new doors from $3,647 installed. You always get a written quote first.`],
+    ["How much does garage door repair cost in Greater Vancouver?", `We post real ranges so there are no surprises. Spring repair ${PX_RANGE.spring}; opener repairs ${cfg.serviceRanges.opener.split(" · ")[0].toLowerCase()} with new openers ${PX_RANGE.openerFrom}; cable repair ${cfg.serviceRanges.cable}; off-track and rollers ${cfg.serviceRanges.offtrack}; a flat $129 tune-up; new doors ${PX_RANGE.newdoorFrom}. You always get a written quote first. (Tap the Pricing button to reveal exact figures.)`],
     ["Do you offer same-day garage door repair?", "For most repairs across Greater Vancouver, yes. Broken springs, snapped cables and stuck doors are priority calls, and we carry the common parts on the van. Call or text early for the best same-day window."],
     ["Are you licensed and insured in BC?", "Yes, and we're precise about it: garage-door work is an unregulated trade in BC (no provincial trade licence exists), so \"licensed\" means we hold a municipal business licence. We also carry commercial liability insurance and are WorkSafeBC-covered. We never imply a trade certificate that doesn't exist."],
     ["Why do garage door springs break?", "Springs are rated for a set number of open/close cycles (about 10,000 for standard springs — roughly 7 years at average use). Age, rust from our damp coastal air, and cold snaps that make the steel brittle all bring that day forward. When one breaks, the door becomes too heavy to lift safely."],
