@@ -176,6 +176,16 @@ svg { width: 1.25em; height: 1.25em; flex: none; }
 .card__link:hover { color: var(--accent-text); }
 .card--service { border-top: 4px solid var(--accent); }
 
+/* Image cards — photo banner on top, content below (replaces icon squares) */
+.card--img { padding: 0; overflow: hidden; border-top: none; }
+.card--img .card__pic { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--brand); }
+.card--img .card__pic img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s var(--ease); }
+.card--img:hover .card__pic img { transform: scale(1.06); }
+.card--img .card__pic::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,13,15,0) 55%, rgba(12,13,15,.45)); }
+.card--img .card__pic .card__badge { position: absolute; left: 12px; top: 12px; z-index: 2; background: var(--accent); color: #15171a; font-family: var(--font-head); font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; padding: .28rem .6rem; border-radius: var(--r-sm); }
+.card--img .card__body { padding: var(--s-5) var(--s-6) var(--s-6); display: flex; flex-direction: column; flex: 1; }
+.card--img .card__body h3 { margin-bottom: .4rem; }
+
 /* feature/list pills */
 .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
 .checks li { display: flex; gap: .6rem; align-items: flex-start; color: var(--ink-soft); margin: 0; }

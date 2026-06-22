@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260621c";
+const ASSETV = "20260621d";
 const TODAY = "2026-06-21";
 
 /* ---------------- icons ---------------- */
@@ -61,6 +61,30 @@ const SERVICES_NAV = [
   ["/garage-door-maintenance-tune-up.html", "Maintenance & tune-up"],
   ["/emergency-garage-door-repair.html", "Emergency repair"],
 ];
+
+// service URL -> relevant photo (reused on cards across the site)
+const SERVICE_IMG = {
+  "/garage-door-spring-repair.html": "/assets/img/svc-spring.webp",
+  "/garage-door-opener-repair-installation.html": "/assets/img/svc-opener.webp",
+  "/garage-door-cable-repair.html": "/assets/img/svc-cable.webp",
+  "/garage-door-off-track-roller-repair.html": "/assets/img/svc-offtrack.webp",
+  "/new-garage-door-installation.html": "/assets/img/svc-newdoor.webp",
+  "/garage-door-maintenance-tune-up.html": "/assets/img/svc-maintenance.webp",
+  "/emergency-garage-door-repair.html": "/assets/img/svc-emergency.webp",
+};
+// responsive <img> for a card photo banner
+function cardImg(img, alt) {
+  const b = img.replace(/\.webp$/, "");
+  return `<img src="${b}-480.webp" srcset="${b}-480.webp 480w, ${b}-960.webp 960w" sizes="(max-width:820px) 100vw, 380px" width="960" height="600" loading="lazy" decoding="async" alt="${alt}">`;
+}
+// an image-topped card (anchor or div)
+function imgCard({ img, alt, title, desc, href, link, badge, tag }) {
+  const inner = `<div class="card__pic">${badge ? `<span class="card__badge">${badge}</span>` : ""}${cardImg(img, alt)}</div>
+      <div class="card__body"><h3>${title}</h3><p>${desc}</p>${link ? `<span class="card__link">${link} ${I.arrow}</span>` : ""}</div>`;
+  return href
+    ? `<a class="card card--img card--service" href="${href}" style="text-decoration:none">${inner}</a>`
+    : `<div class="card card--img">${inner}</div>`;
+}
 
 const CITIES = ["Vancouver", "Burnaby", "Surrey", "Richmond", "Coquitlam", "North Vancouver", "Port Coquitlam", "Port Moody", "New Westminster", "West Vancouver", "Delta", "Langley", "Maple Ridge", "Pitt Meadows", "White Rock"];
 // Footer shows a curated subset (full list lives on the Service Areas hub).
@@ -560,9 +584,9 @@ ${extra}
   <div class="container">
     <div class="center" data-reveal><span class="eyebrow">What you get</span><h2>Why homeowners call the company named Sketchy</h2></div>
     <div class="grid grid--3" data-stagger style="margin-top:2rem">
-      <div class="card"><div class="card__icon">${I.dollar}</div><h3>Upfront, written pricing</h3><p>You approve the number before we start. No bait pricing, no "while we're in here" surprises.</p></div>
-      <div class="card"><div class="card__icon">${I.shield}</div><h3>Licensed &amp; insured</h3><p>Business-licensed, insured &amp; WorkSafeBC-covered — the boring paperwork that means you're protected.</p></div>
-      <div class="card"><div class="card__icon">${I.check}</div><h3>Guaranteed work</h3><p>Quality parts and a workmanship warranty. If it isn't right, we come back and make it right.</p></div>
+      ${imgCard({ img: "/assets/img/trust-pricing.webp", alt: "Upfront written price quote on a clipboard", title: "Upfront, written pricing", desc: `You approve the number before we start. No bait pricing, no "while we're in here" surprises.` })}
+      ${imgCard({ img: "/assets/img/trust-licensed.webp", alt: "Licensed and insured Sketchy Garage Doors technician by the van", title: "Licensed &amp; insured", desc: `Business-licensed, insured &amp; WorkSafeBC-covered — the boring paperwork that means you're protected.` })}
+      ${imgCard({ img: "/assets/img/trust-guarantee.webp", alt: "Technician giving a thumbs up by a finished garage door", title: "Guaranteed work", desc: `Quality parts and a workmanship warranty. If it isn't right, we come back and make it right.` })}
     </div>
   </div>
 </section>
@@ -876,7 +900,7 @@ ${assuranceStrip()}
   <div class="container">
     <div class="center" data-reveal><span class="eyebrow">What we fix in ${name}</span><h2>Every garage-door service</h2></div>
     <div class="grid grid--3" data-stagger style="margin-top:2rem">
-      ${SERVICES_NAV.slice(0, 6).map(([h, t]) => `<a class="card card--service" href="${h}" style="text-decoration:none"><h3>${t}</h3><p>Professional ${t.toLowerCase()} across ${name} and the surrounding area.</p><span class="card__link">Learn more ${I.arrow}</span></a>`).join("\n      ")}
+      ${SERVICES_NAV.slice(0, 6).map(([h, t]) => imgCard({ img: SERVICE_IMG[h], alt: `${t} in ${name}, BC`, title: t, desc: `Professional ${t.toLowerCase()} across ${name} and the surrounding area.`, href: h, link: "Learn more" })).join("\n      ")}
     </div>
   </div>
 </section>
@@ -955,7 +979,7 @@ ${assuranceStrip()}
       <p class="lead mx-auto">A broken spring is no laughing matter (the name is). Whatever your door is doing, we fix it fast — and stand behind it.</p>
     </div>
     <div class="grid grid--3" data-stagger style="margin-top:2.4rem">
-      ${serviceCards.map(([k, ic, t, d, h]) => `<a class="card card--service" href="${h}" style="text-decoration:none"><div class="card__icon">${ic}</div><h3>${t}</h3><p>${d}</p><span class="card__link">See ${t.toLowerCase()} ${I.arrow}</span></a>`).join("\n      ")}
+      ${serviceCards.map(([k, ic, t, d, h]) => imgCard({ img: SERVICE_IMG[h], alt: `${t} — Sketchy Garage Doors technician at work in Metro Vancouver`, title: t, desc: d, href: h, link: "See " + t.toLowerCase() })).join("\n      ")}
     </div>
   </div>
 </section>
@@ -1005,9 +1029,9 @@ ${assuranceStrip()}
   <div class="container">
     <div class="center" data-reveal><span class="eyebrow">Risk reversal</span><h2>Our promise, in writing</h2><p class="lead mx-auto">Three guarantees that make a "sketchy" name the safest call you'll make.</p></div>
     <div class="grid grid--3" data-stagger style="margin-top:2rem">
-      <div class="card"><div class="card__icon">${I.dollar}</div><h3>Upfront written quote</h3><p>You see and approve the full price before any work begins. No bait, no surprises, no "while we were in there."</p></div>
-      <div class="card"><div class="card__icon">${I.shield}</div><h3>Licensed &amp; insured</h3><p>Municipal business licence, commercial liability insurance, and WorkSafeBC coverage. You're protected.</p></div>
-      <div class="card"><div class="card__icon">${I.check}</div><h3>Workmanship guarantee</h3><p>Quality parts and a warranty on our labour. If the fix isn't right, we come back and make it right — free.</p></div>
+      ${imgCard({ img: "/assets/img/trust-pricing.webp", alt: "Upfront written quote on a clipboard before work begins", title: "Upfront written quote", desc: `You see and approve the full price before any work begins. No bait, no surprises, no "while we were in there."` })}
+      ${imgCard({ img: "/assets/img/trust-licensed.webp", alt: "Business-licensed, insured, WorkSafeBC-covered technician", title: "Licensed &amp; insured", desc: "Municipal business licence, commercial liability insurance, and WorkSafeBC coverage. You're protected." })}
+      ${imgCard({ img: "/assets/img/trust-guarantee.webp", alt: "Workmanship guarantee — we come back free if it's not right", title: "Workmanship guarantee", desc: "Quality parts and a warranty on our labour. If the fix isn't right, we come back and make it right — free." })}
     </div>
   </div>
 </section>
@@ -1052,7 +1076,7 @@ ${assuranceStrip()}
 <section class="section">
   <div class="container">
     <div class="grid grid--3" data-stagger>
-      ${cards.map(([ic, t, d, h, r]) => `<a class="card card--service" href="${h}" style="text-decoration:none"><div class="card__icon">${ic}</div><h3>${t}</h3><p>${d}</p><span class="tag" style="margin-bottom:.8rem">${r}</span><span class="card__link">Learn more ${I.arrow}</span></a>`).join("\n      ")}
+      ${cards.map(([ic, t, d, h, r]) => imgCard({ img: SERVICE_IMG[h], alt: `${t} in Greater Vancouver`, title: t, desc: d, href: h, link: "Learn more", badge: r })).join("\n      ")}
     </div>
   </div>
 </section>
@@ -1074,7 +1098,7 @@ ${assuranceStrip()}
   <div class="container">
     <div class="center" data-reveal style="max-width:680px;margin-inline:auto"><span class="eyebrow">Priority cities</span><h2>Pick your city</h2><p class="lead mx-auto">Each page covers the neighbourhoods we serve, the local garage-door issues we see, and how fast we can reach you.</p></div>
     <div class="grid grid--3" data-stagger style="margin-top:2rem">
-      ${CITIES.map((c) => `<a class="card card--service" href="/service-areas/${citySlug(c)}.html" style="text-decoration:none"><div class="card__icon">${I.pin}</div><h3>${c}</h3><p>${cityData[c].intro.replace(/<[^>]+>/g, "").split(". ")[0]}.</p><span class="card__link">${c} garage-door repair ${I.arrow}</span></a>`).join("\n      ")}
+      ${CITIES.map((c) => imgCard({ img: cityData[c].img, alt: `Sketchy Garage Doors van in ${c}, BC`, title: c, desc: cityData[c].intro.replace(/<[^>]+>/g, "").split(". ")[0] + ".", href: "/service-areas/" + citySlug(c) + ".html", link: `${c} garage-door repair` })).join("\n      ")}
     </div>
     <div class="center" data-reveal style="margin-top:2.5rem">
       <h3>Also serving</h3>
