@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260621d";
+const ASSETV = "20260621e";
 const TODAY = "2026-06-21";
 
 /* ---------------- icons ---------------- */
@@ -99,9 +99,9 @@ function header(curPath = "") {
     || (h === "/services.html" && /(garage-door-|new-garage-door|emergency-garage)/.test(curPath));
   return `<header class="site-header">
   <div class="container nav">
-    <a class="brand" href="/" aria-label="${BRAND} home">
+    <a class="brand" href="/">
       <span class="brand__mark" aria-hidden="true">${I.door}</span>
-      <span>Sketchy<b>·</b>Garage Doors</span>
+      <span>Sketchy<b aria-hidden="true">·</b> Garage Doors</span>
     </a>
     <nav aria-label="Primary">
       <ul class="nav__links" id="nav-links">
@@ -110,7 +110,7 @@ function header(curPath = "") {
       </ul>
     </nav>
     <div class="nav__actions">
-      <a class="nav__call" href="tel:${TEL}" data-evt="call">${I.phone}<span>${TEL_DISPLAY}</span></a>
+      <a class="nav__call" href="tel:${TEL}" aria-label="Call ${TEL_DISPLAY}" data-evt="call">${I.phone}<span>${TEL_DISPLAY}</span></a>
       <button class="nav__toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">${I.menu}</button>
     </div>
   </div>
@@ -119,8 +119,8 @@ function header(curPath = "") {
 
 function fab() {
   return `<div class="fab" role="navigation" aria-label="Quick contact">
-  <a class="fab__call" href="tel:${TEL}" aria-label="Call ${BRAND} at ${TEL_DISPLAY}" data-evt="call">${I.phone}<span>Call now</span></a>
-  <a class="fab__text" href="sms:${TEL}?&body=${SMS_BODY}" aria-label="Text ${BRAND}" data-evt="text">${I.chat}<span>Text us</span></a>
+  <a class="fab__call" href="tel:${TEL}" aria-label="Call now — ${BRAND}, ${TEL_DISPLAY}" data-evt="call">${I.phone}<span>Call now</span></a>
+  <a class="fab__text" href="sms:${TEL}?&body=${SMS_BODY}" aria-label="Text us — ${BRAND}" data-evt="text">${I.chat}<span>Text us</span></a>
 </div>`;
 }
 
@@ -234,11 +234,14 @@ function faqNode(faqs) {
 
 /* ---------------- layout ---------------- */
 function heroPreload(img) {
+  // page-head heroes are decorative (42% opacity behind a dark gradient) -> lighter -head variants
   const b = img.replace(/\.webp$/, "");
-  return `<link rel="preload" as="image" href="${b}-960.webp" imagesrcset="${b}-480.webp 480w, ${b}-960.webp 960w, ${img} 1024w" imagesizes="100vw" fetchpriority="high">`;
+  return `<link rel="preload" as="image" href="${b}-head-960.webp" imagesrcset="${b}-head-480.webp 480w, ${b}-head-960.webp 960w" imagesizes="100vw" fetchpriority="high">`;
 }
-function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-default.png", bodyClass = "", preload = "", noindex = false }) {
+function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-default.jpg", bodyClass = "", preload = "", noindex = false }) {
   const canonical = DOMAIN + path;
+  // OG/Twitter require png/jpg (webp is ignored by Facebook/Slack) -> fall back to the branded card
+  const og = /\.(png|jpe?g)$/.test(ogImg) ? ogImg : "/assets/og/og-default.jpg";
   const graph = { "@context": "https://schema.org", "@graph": [businessNode(), { "@type": "WebSite", "@id": `${DOMAIN}/#website`, url: `${DOMAIN}/`, name: BRAND, publisher: { "@id": `${DOMAIN}/#business` } }] };
   const ld = [graph].concat(jsonld);
   return `<!DOCTYPE html>
@@ -256,16 +259,17 @@ function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-d
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${DOMAIN}${ogImg}">
+<meta property="og:image" content="${DOMAIN}${og}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${desc}">
-<meta name="twitter:image" content="${DOMAIN}${ogImg}">
+<meta name="twitter:image" content="${DOMAIN}${og}">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 ${preload}
 <link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-700-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-400-latin.woff2" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-600-latin.woff2" crossorigin>
 <link rel="stylesheet" href="/fonts/fonts.css?v=${ASSETV}">
 <link rel="stylesheet" href="/styles.css?v=${ASSETV}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -302,9 +306,9 @@ ${fab()}
 /* ---------------- reusable section builders ---------------- */
 function pagehead({ h1, sub, img, alt, crumbs }) {
   const base = img.replace(/\.webp$/, "");
-  const srcset = `${base}-480.webp 480w, ${base}-960.webp 960w, ${img} 1024w`;
+  const srcset = `${base}-head-480.webp 480w, ${base}-head-960.webp 960w`;
   return `<section class="pagehead pagehead--img">
-  <img class="pagehead__bg" src="${base}-960.webp" srcset="${srcset}" sizes="100vw" alt="" aria-hidden="true" fetchpriority="high" width="1024" height="1024">
+  <img class="pagehead__bg" src="${base}-head-960.webp" srcset="${srcset}" sizes="100vw" alt="" aria-hidden="true" fetchpriority="high" width="960" height="960">
   <div class="container">
     <div>
       ${crumbs ? `<nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,.7)">${crumbs}</nav>` : ""}
@@ -595,7 +599,7 @@ ${faqSection(s.faqs)}
   <div class="container center" data-reveal>
     <span class="eyebrow">More we fix</span>
     <h2>Other garage-door services</h2>
-    <div class="coverage-list" style="justify-content:center">${otherServices.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</div>
+    <ul class="coverage-list" style="justify-content:center">${otherServices.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul>
   </div>
 </section>
 ${ctaBand()}`;
@@ -909,7 +913,7 @@ ${faqSection(c.faqs, `Garage door FAQs — ${name}`)}
   <div class="container center" data-reveal>
     <span class="eyebrow">Nearby</span>
     <h2>We also serve</h2>
-    <div class="coverage-list" style="justify-content:center">${nearby.map((n) => `<li><a href="/service-areas/${citySlug(n)}.html">${n}</a></li>`).join("")}<li><a href="/service-areas/">All areas →</a></li></div>
+    <ul class="coverage-list" style="justify-content:center">${nearby.map((n) => `<li><a href="/service-areas/${citySlug(n)}.html">${n}</a></li>`).join("")}<li><a href="/service-areas/">All areas →</a></li></ul>
   </div>
 </section>
 ${ctaBand(`Need a garage door fixed in ${name} today?`)}`;
@@ -1337,11 +1341,11 @@ function notFound() {
     <div class="stat" style="font-size:4rem">404</div>
     <h1>This page went off-track.</h1>
     <p class="lead mx-auto">We couldn't find what you were looking for — but we can definitely find your garage door. Try one of these, or just call us.</p>
-    <div class="coverage-list" style="justify-content:center;margin-top:1.5rem">
+    <ul class="coverage-list" style="justify-content:center;margin-top:1.5rem">
       <li><a href="/">Home</a></li><li><a href="/services.html">Services</a></li>
       <li><a href="/garage-door-spring-repair.html">Spring repair</a></li>
       <li><a href="/service-areas/">Service areas</a></li><li><a href="/contact.html">Contact</a></li>
-    </div>
+    </ul>
     <div style="margin-top:1.6rem">${callBtn("btn btn--primary btn--lg")}</div>
   </div>
 </section>`;
