@@ -20,37 +20,28 @@
     });
   }
 
-  /* ---- Footer price-reveal toggle ---- */
-  var pBtn = document.querySelector(".footer-price-toggle");
-  var pPanel = document.getElementById("footer-prices");
-  if (pBtn && pPanel) {
-    // JS present -> start collapsed (no-JS users see it open as a fallback)
-    pPanel.hidden = true;
-    pBtn.setAttribute("aria-expanded", "false");
-    pBtn.addEventListener("click", function () {
-      var open = pPanel.hidden;
-      pPanel.hidden = !open;
-      pBtn.setAttribute("aria-expanded", open ? "true" : "false");
-      var label = pBtn.querySelector(".lbl");
-      if (label) label.textContent = open ? "Hide prices" : "Show prices";
-      if (open && window.__motion && pPanel.animate) {
-        window.__motion.animate(pPanel, { opacity: [0, 1], transform: ["translateY(8px)", "translateY(0)"] }, { duration: 0.4, easing: [0.16, 1, 0.3, 1] });
-      }
-    });
-  }
-
-  /* ---- In-page price-reveal buttons (e.g. spring page) ---- */
-  document.querySelectorAll("[data-price-toggle]").forEach(function (btn) {
-    var target = document.getElementById(btn.getAttribute("data-price-toggle"));
-    if (!target) return;
-    target.hidden = true;
-    btn.setAttribute("aria-expanded", "false");
+  /* ---- Pricing reveal (FLEET-STANDARDS §2): hidden-by-default, footer toggle ----
+     Every price element shows a generic label and stores the real price in data-px.
+     One footer "Pricing" button swaps all [data-px] across the page. JS-off = generic labels. */
+  (function () {
+    var btn = document.getElementById("pricing-toggle");
+    if (!btn) return;
+    var els = [].slice.call(document.querySelectorAll("[data-px]"));
+    var saved = new Array(els.length);
+    var on = false;
+    var lbl = btn.querySelector(".lbl");
     btn.addEventListener("click", function () {
-      var open = target.hidden;
-      target.hidden = !open;
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      on = !on;
+      els.forEach(function (el, i) {
+        if (on) { if (saved[i] == null) saved[i] = el.innerHTML; el.innerHTML = el.getAttribute("data-px"); }
+        else { if (saved[i] != null) el.innerHTML = saved[i]; }
+      });
+      document.body.classList.toggle("show-pricing", on);
+      if (lbl) lbl.textContent = on ? "Hide pricing" : "Pricing";
+      else btn.textContent = on ? "Hide pricing" : "Pricing";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
     });
-  });
+  })();
 
   /* ---- Form submit (progressive enhancement) ---- */
   document.querySelectorAll("form[data-ajax]").forEach(function (form) {

@@ -15,8 +15,10 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260622b";
-const TODAY = "2026-06-21";
+const ASSETV = "20260622c";
+const TODAY = "2026-06-22";
+const UPDATED_LABEL = "June 2026"; // visible freshness byline (FLEET-STANDARDS §7)
+const byline = () => `<p class="updated-byline" style="font-size:.85rem;color:var(--ink-soft);margin:.2rem 0 0">Updated ${UPDATED_LABEL} · written &amp; reviewed by the Sketchy Garage Doors team</p>`;
 
 /* ---------------- icons ---------------- */
 const I = {
@@ -41,6 +43,12 @@ const I = {
 };
 
 /* ---------------- shared chunks ---------------- */
+/* Hidden-by-default price element (FLEET-STANDARDS §2).
+   Shows `generic` by default; the footer "Pricing" toggle swaps in `priced` (the data-px value).
+   Degrades gracefully with JS off: the generic label simply stays visible. */
+const px = (generic, priced, cls = "price-tag") =>
+  `<span class="${cls}" data-px="${String(priced).replace(/"/g, "&quot;")}">${generic}</span>`;
+
 const callBtn = (cls = "btn btn--primary") => `<a class="${cls}" href="tel:${TEL}" data-evt="call">${I.phone}<span>Call ${TEL_DISPLAY}</span></a>`;
 const textBtn = (cls = "btn btn--on-dark") => `<a class="${cls}" href="sms:${TEL}?&body=${SMS_BODY}" data-evt="text">${I.chat}<span>Text us</span></a>`;
 
@@ -170,15 +178,15 @@ function footer() {
     </div>
 
     <div style="margin-top:2rem">
-      <button class="footer-price-toggle" type="button" aria-expanded="false" aria-controls="footer-prices">${I.dollar}<span class="lbl">Show prices</span></button>
+      <button id="pricing-toggle" class="footer-price-toggle" type="button" aria-pressed="false">${I.dollar}<span class="lbl">Pricing</span></button>
       <div class="footer-prices" id="footer-prices">
         <h4 style="margin-top:0">Spring repair — real prices, no surprises</h4>
         <table>
-          <tr><td>${sp.singleSpring.label}</td><td>$${sp.singleSpring.price}</td></tr>
-          <tr><td>${sp.twoSpringsNewCables.label} <span style="color:rgba(255,255,255,.6)">(cables free)</span></td><td>$${sp.twoSpringsNewCables.price}</td></tr>
-          <tr><td>${sp.twoSpringsHighCycle.label} <span style="color:rgba(255,255,255,.6)">(cables free)</span></td><td>$${sp.twoSpringsHighCycle.price}</td></tr>
+          <tr><td>${sp.singleSpring.label}</td><td>${px("Quoted on site", "$" + sp.singleSpring.price)}</td></tr>
+          <tr><td>${sp.twoSpringsNewCables.label} <span style="color:rgba(255,255,255,.6)">(cables free)</span></td><td>${px("Quoted on site", "$" + sp.twoSpringsNewCables.price)}</td></tr>
+          <tr><td>${sp.twoSpringsHighCycle.label} <span style="color:rgba(255,255,255,.6)">(cables free)</span></td><td>${px("Quoted on site", "$" + sp.twoSpringsHighCycle.price)}</td></tr>
         </table>
-        <p style="margin:.8rem 0 0;font-size:.875rem;color:rgba(255,255,255,.7)">Free safety inspection with every spring job · written quote before we start. <a href="/garage-door-spring-repair.html" style="color:var(--accent)">See full spring pricing →</a></p>
+        <p style="margin:.8rem 0 0;font-size:.875rem;color:rgba(255,255,255,.7)">Free safety inspection with every spring job · written quote before we start. Tap <strong>Pricing</strong> to reveal real numbers across the site. <a href="/garage-door-spring-repair.html" style="color:var(--accent)">See full spring pricing →</a></p>
       </div>
     </div>
 
@@ -200,7 +208,7 @@ function businessNode() {
     "@type": "HomeAndConstructionBusiness",
     "@id": `${DOMAIN}/#business`,
     name: BRAND,
-    image: [`${DOMAIN}/assets/img/home-hero-desktop.webp`, `${DOMAIN}/assets/img/about.webp`],
+    image: [`${DOMAIN}/assets/og/home.jpg`, `${DOMAIN}/assets/img/home-hero-desktop.webp`, `${DOMAIN}/assets/img/about.webp`],
     logo: `${DOMAIN}/assets/og/logo-512.png`,
     url: `${DOMAIN}/`,
     telephone: cfg.phone,
@@ -225,6 +233,9 @@ function businessNode() {
     },
   };
 }
+function webPageLd(path, name) {
+  return { "@context": "https://schema.org", "@type": "WebPage", "@id": `${DOMAIN}${path}#webpage`, url: DOMAIN + path, name, dateModified: TODAY, isPartOf: { "@id": `${DOMAIN}/#website` }, publisher: { "@id": `${DOMAIN}/#business` } };
+}
 function breadcrumb(items) {
   return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it[0], item: DOMAIN + it[1] })) };
 }
@@ -238,10 +249,10 @@ function heroPreload(img) {
   const b = img.replace(/\.webp$/, "");
   return `<link rel="preload" as="image" href="${b}-head-960.webp" imagesrcset="${b}-head-480.webp 480w, ${b}-head-960.webp 960w" imagesizes="100vw" fetchpriority="high">`;
 }
-function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/og-default.jpg", bodyClass = "", preload = "", noindex = false }) {
+function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/home.jpg", bodyClass = "", preload = "", noindex = false }) {
   const canonical = DOMAIN + path;
-  // OG/Twitter require png/jpg (webp is ignored by Facebook/Slack) -> fall back to the branded card
-  const og = /\.(png|jpe?g)$/.test(ogImg) ? ogImg : "/assets/og/og-default.jpg";
+  // OG/Twitter require png/jpg (webp is ignored by Facebook/Slack) -> fall back to the real hero photo
+  const og = /\.(png|jpe?g)$/.test(ogImg) ? ogImg : "/assets/og/home.jpg";
   const graph = { "@context": "https://schema.org", "@graph": [businessNode(), { "@type": "WebSite", "@id": `${DOMAIN}/#website`, url: `${DOMAIN}/`, name: BRAND, publisher: { "@id": `${DOMAIN}/#business` } }] };
   const ld = [graph].concat(jsonld);
   return `<!DOCTYPE html>
@@ -502,7 +513,7 @@ function openerCard(m) {
         <span class="opener__tag">${m.tag}</span>
         <h3>${m.name}</h3>
         <p class="opener__spec">${m.series} · ${m.drive} · ${m.hp}${m.batteryBackup ? " · battery backup" : ""}</p>
-        <p class="opener__price">$${priceFmt} <span style="font-size:.8rem;font-weight:600;color:var(--ink-soft)">installed</span></p>
+        <p class="opener__price">${px("Flat-rate", "$" + priceFmt)} <span style="font-size:.8rem;font-weight:600;color:var(--ink-soft)">installed</span></p>
         <p style="font-size:.9rem;margin:0">${m.tagline}</p>
         <ul class="opener__pills">${m.specs.slice(0, 4).map((s, i) => `<li class="${i === 0 ? "is-feature" : ""}">${s}</li>`).join("")}</ul>
       </div>
@@ -576,6 +587,7 @@ ${assuranceStrip()}
     <div data-reveal>
       <span class="eyebrow">${s.nav} · ${s.range}</span>
       <h2>${s.h1.replace(" Across Greater Vancouver", "")}</h2>
+      ${byline()}
       <p class="lead">${s.lead}</p>
       <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem">${callBtn()} ${textBtn("btn btn--ghost")}</div>
     </div>
@@ -607,7 +619,7 @@ ${ctaBand()}`;
 
   out(s.file, layout({
     path: "/" + s.file, title: s.title, desc: s.desc, body, ogImg: s.img, preload: heroPreload(s.img),
-    jsonld: [serviceLd, ...extraLd, breadcrumb([["Home", "/"], ["Services", "/services.html"], [s.nav, "/" + s.file]]), faqNode(s.faqs)],
+    jsonld: [webPageLd("/" + s.file, s.h1), serviceLd, ...extraLd, breadcrumb([["Home", "/"], ["Services", "/services.html"], [s.nav, "/" + s.file]]), faqNode(s.faqs)],
   }));
 }
 
@@ -616,7 +628,7 @@ function springTiers() {
   const tier = (t, featured, tag) => `<div class="tier${featured ? " tier--featured" : ""}">
     <span class="tier__tag">${tag}</span>
     <h3>${t.label}</h3>
-    <div class="tier__price">$${t.price} <small>installed</small></div>
+    <div class="tier__price">${px("Flat-rate", "$" + t.price)} <small>installed</small></div>
     <p>${t.blurb}</p>
     <ul class="checks">${(t.includes || ["Replace broken spring", "Lubricate & balance door", "Free safety inspection"]).map((x) => `<li>${I.check}<span>${x[0].toUpperCase() + x.slice(1)}</span></li>`).join("")}</ul>
     ${callBtn("btn btn--primary btn--block")}
@@ -905,6 +917,7 @@ ${assuranceStrip()}
     <div data-reveal>
       <span class="eyebrow">${I.pin} ${name}, BC</span>
       <h2>Your ${name} garage-door crew</h2>
+      ${byline()}
       <p class="lead">${c.intro}</p>
     </div>
     <div class="prose" data-reveal style="margin-top:1.5rem">${c.detail}</div>
@@ -934,7 +947,7 @@ ${faqSection(c.faqs, `Garage door FAQs — ${name}`)}
 ${ctaBand(`Need a garage door fixed in ${name} today?`)}`;
   out(path, layout({
     path, title, desc, body, ogImg: c.img, preload: heroPreload(c.img),
-    jsonld: [serviceLd, breadcrumb([["Home", "/"], ["Service Areas", "/service-areas/"], [name, path]]), faqNode(c.faqs)],
+    jsonld: [webPageLd(path, `Garage Door Repair in ${name}`), serviceLd, breadcrumb([["Home", "/"], ["Service Areas", "/service-areas/"], [name, path]]), faqNode(c.faqs)],
   }));
 }
 

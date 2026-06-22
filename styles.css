@@ -323,8 +323,13 @@ svg { width: 1.25em; height: 1.25em; flex: none; }
 .footer-contact a { display: inline-flex; align-items: center; gap: .5rem; }
 .footer-contact svg { color: var(--accent); }
 .footer-bottom { border-top: 1px solid var(--line-dark); margin-top: var(--s-7); padding-top: var(--s-5); display: flex; flex-wrap: wrap; gap: var(--s-4); justify-content: space-between; font-size: var(--t-sm); }
-.footer-price-toggle { background: var(--accent); color: #15171a; border: none; font-family: var(--font-head); font-weight: 700; padding: .6rem 1.1rem; border-radius: var(--r-pill); cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; }
-.footer-price-toggle:hover { background: #ffdb4a; }
+.footer-price-toggle { background: transparent; color: var(--accent); border: 1px solid var(--accent); font-family: var(--font-head); font-weight: 700; padding: .6rem 1.1rem; border-radius: var(--r-pill); cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: background .15s, color .15s; }
+.footer-price-toggle:hover { background: rgba(var(--accent-rgb), .14); }
+#pricing-toggle[aria-pressed="true"] { background: var(--accent); color: #15171a; }
+/* Hidden-by-default price labels (FLEET-STANDARDS §2). Revealed via #pricing-toggle. */
+.price-tag { font-weight: 600; }
+body.show-pricing .price-tag { font-family: var(--font-head); font-weight: 700; color: var(--accent-text); }
+.section--dark .price-tag, .footer-prices .price-tag { color: var(--accent); }
 .footer-prices { margin-top: var(--s-5); background: #1d2026; border: 1px solid var(--line-dark); border-radius: var(--r-lg); padding: var(--s-6); }
 .footer-prices[hidden] { display: none; }
 .footer-prices table { width: 100%; border-collapse: collapse; }
