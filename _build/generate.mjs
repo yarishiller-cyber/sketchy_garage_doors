@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260623a";
+const ASSETV = "20260623b";
 const TODAY = "2026-06-22";
 const UPDATED_LABEL = "June 2026"; // visible freshness byline (FLEET-STANDARDS §7)
 const byline = () => `<p class="updated-byline" style="font-size:.85rem;color:var(--ink-soft);margin:.2rem 0 0">Updated ${UPDATED_LABEL} · written &amp; reviewed by the Sketchy Garage Doors team</p>`;
@@ -528,7 +528,7 @@ function openerCard(m) {
   const base = "/assets/openers/" + m.image.replace(".webp", "");
   return `<div class="opener" data-reveal>
     <div class="opener__main">
-      <img class="opener__img" src="${base}.webp" srcset="${base}-480.webp 480w, ${base}.webp 1000w" sizes="150px" width="150" height="118" loading="lazy" decoding="async" alt="${m.imageAlt}">
+      <img class="opener__img" src="${base}.webp" srcset="${base}-480.webp 480w, ${base}.webp 1000w" sizes="190px" width="190" height="170" loading="lazy" decoding="async" alt="${m.imageAlt}">
       <div class="opener__info">
         <span class="opener__tag">${m.tag}</span>
         <h3>${m.name}</h3>
@@ -645,7 +645,12 @@ ${ctaBand()}`;
 
 function springTiers() {
   const sp = cfg.springPricing;
-  const tier = (t, featured, tag) => `<div class="tier${featured ? " tier--featured" : ""}">
+  const tierImg = (img, alt) => {
+    const b = img.replace(/\.webp$/, "");
+    return `<div class="tier__media"><img src="${b}-480.webp" srcset="${b}-480.webp 480w, ${b}-960.webp 960w" sizes="(max-width:820px) 100vw, 360px" width="480" height="300" loading="lazy" decoding="async" alt="${alt}"></div>`;
+  };
+  const tier = (t, featured, tag, img, alt) => `<div class="tier${featured ? " tier--featured" : ""}">
+    ${tierImg(img, alt)}
     <span class="tier__tag">${tag}</span>
     <h3>${t.label}</h3>
     <div class="tier__price">${px("Flat-rate", "$" + t.price)} <small>installed</small></div>
@@ -660,9 +665,9 @@ function springTiers() {
       <h2>Spring repair pricing, posted up front</h2>
       <p class="lead">Flat-rate spring tiers, no $19.99 bait and no surprise fees. ${px("Tap Pricing below to reveal figures", "Most jobs land between $739 and $1,274")} — pick the tier that fits; we'll confirm on site and never start without your OK.</p>
       <div class="tier-grid">
-        ${tier(sp.singleSpring, false, "Quick fix")}
-        ${tier(sp.twoSpringsNewCables, true, "Most popular")}
-        ${tier(sp.twoSpringsHighCycle, false, "Longest life")}
+        ${tier(sp.singleSpring, false, "Quick fix", "/assets/img/svc-spring.webp", "Technician replacing a single broken garage door torsion spring")}
+        ${tier(sp.twoSpringsNewCables, true, "Most popular", "/assets/img/spring-torsion.webp", "Matched pair of torsion springs mounted on the shaft above a garage door")}
+        ${tier(sp.twoSpringsHighCycle, false, "Longest life", "/assets/img/spring-extension.webp", "High-cycle garage door springs rated for heavy daily use")}
       </div>
       <p class="price-note">${I.check} Free cables on both two-spring tiers &nbsp;·&nbsp; ${I.check} Free safety inspection every job &nbsp;·&nbsp; ${I.check} Written quote before we touch a thing</p>
     </div>
