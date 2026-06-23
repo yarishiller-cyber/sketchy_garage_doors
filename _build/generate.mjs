@@ -15,7 +15,7 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260622d";
+const ASSETV = "20260623a";
 const TODAY = "2026-06-22";
 const UPDATED_LABEL = "June 2026"; // visible freshness byline (FLEET-STANDARDS §7)
 const byline = () => `<p class="updated-byline" style="font-size:.85rem;color:var(--ink-soft);margin:.2rem 0 0">Updated ${UPDATED_LABEL} · written &amp; reviewed by the Sketchy Garage Doors team</p>`;
@@ -271,6 +271,9 @@ function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/home
 <html lang="en-CA">
 <head>
 <meta charset="utf-8">
+<script>/* Gate scroll-reveal initial-hidden state behind html.js so content is ALWAYS visible
+   with JS off (and for reduced-motion). Set synchronously before CSS resolves to avoid FOUC. */
+(function(d){var h=d.documentElement;try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.className+=" js";}catch(e){}})(document);</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 <meta name="description" content="${desc}">
@@ -311,13 +314,18 @@ ${footer()}
 ${fab()}
 <script src="/script.js?v=${ASSETV}" defer></script>
 <script type="module">
+  // Failsafe: if Motion never initialises (CDN blocked, import error, slow device),
+  // drop the gating class so CSS reveals all [data-reveal]/[data-stagger] content.
+  const reveal = () => document.documentElement.classList.remove("js");
+  const guard = setTimeout(reveal, 2600);
   const boot = async () => {
     try {
       const m = await import("https://cdn.jsdelivr.net/npm/motion@latest/+esm");
       window.__motion = { animate: m.animate, inView: m.inView, scroll: m.scroll, stagger: m.stagger };
       const mod = await import("/js/motion.js");
       mod.initMotion();
-    } catch (e) { /* CDN blocked: motion.js fallback reveals all content */ }
+      clearTimeout(guard); // Motion drives the reveals; keep the gating class active
+    } catch (e) { clearTimeout(guard); reveal(); /* CDN blocked: show everything */ }
   };
   if ("requestIdleCallback" in window) requestIdleCallback(boot, { timeout: 1800 });
   else setTimeout(boot, 200);
@@ -331,9 +339,9 @@ function pagehead({ h1, sub, img, alt, crumbs }) {
   const base = img.replace(/\.webp$/, "");
   const srcset = `${base}-head-480.webp 480w, ${base}-head-960.webp 960w`;
   return `<section class="pagehead pagehead--img">
-  <img class="pagehead__bg" src="${base}-head-960.webp" srcset="${srcset}" sizes="100vw" alt="" aria-hidden="true" fetchpriority="high" width="960" height="960">
+  <img class="pagehead__bg" src="${base}-head-960.webp" srcset="${srcset}" sizes="100vw" alt="" aria-hidden="true" fetchpriority="high" width="960" height="960" data-parallax="0.12">
   <div class="container">
-    <div>
+    <div data-reveal data-reveal-delay="0.05">
       ${crumbs ? `<nav class="crumbs" aria-label="Breadcrumb" style="color:rgba(255,255,255,.7)">${crumbs}</nav>` : ""}
       <h1>${h1}</h1>
       <p class="lead">${sub}</p>
@@ -987,7 +995,7 @@ function home() {
   const body = `<section class="hero">
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="container hero__inner">
-    <div class="hero__copy">
+    <div class="hero__copy" data-reveal data-reveal-delay="0.05">
       <span class="eyebrow">Greater Vancouver garage-door repair</span>
       <h1>Sketchy name. <span class="hl">Spotless work.</span></h1>
       <p>The only sketchy thing here is the name. Same-day spring, opener, cable &amp; off-track repair across Metro Vancouver — with upfront written pricing and a fix-it-right guarantee.</p>
@@ -1001,8 +1009,8 @@ function home() {
         <span><span class="dot"></span>No $19.99 bait</span>
       </div>
     </div>
-    <div class="hero__media">
-      <div class="frame">
+    <div class="hero__media" data-reveal="left" data-reveal-delay="0.12">
+      <div class="frame" data-parallax="0.12">
         <picture>
           <source media="(max-width: 768px)" srcset="/assets/img/home-hero-mobile-960.webp 960w, /assets/img/home-hero-mobile-480.webp 480w" sizes="100vw">
           <source media="(min-width: 769px)" srcset="/assets/img/home-hero-desktop.webp 1024w, /assets/img/home-hero-desktop-960.webp 960w" sizes="50vw">

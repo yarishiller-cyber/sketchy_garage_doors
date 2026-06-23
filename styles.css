@@ -411,9 +411,26 @@ body.show-pricing .price-tag { font-family: var(--font-head); font-weight: 700; 
   .section { padding-block: var(--s-7); }
 }
 
-/* reduced motion kill-switch */
+/* =====================================================================
+   Scroll-reveal initial state — NO-JS SAFE.
+   The hidden state is gated behind html.js (added synchronously by an inline
+   <head> script ONLY when JS runs AND reduced-motion is off). With JS disabled
+   the class is never added, so content renders fully visible. motion.js then
+   animates these to visible via inline styles (inline wins over these rules).
+   ===================================================================== */
+html.js [data-reveal] { opacity: 0; transform: translateY(24px); }
+html.js [data-reveal="left"]  { transform: translateX(32px); }
+html.js [data-reveal="right"] { transform: translateX(-32px); }
+html.js [data-reveal="down"]  { transform: translateY(-24px); }
+html.js [data-reveal="none"]  { transform: none; }
+html.js [data-stagger] > * { opacity: 0; transform: translateY(20px); }
+/* Parallax headroom: the pagehead bg fills the section exactly, so give it a little
+   vertical overflow room (gated behind .js) so the ±7px parallax shift never exposes an edge. */
+html.js .pagehead__bg[data-parallax] { height: 116%; top: -8%; }
+
+/* reduced motion kill-switch — force everything visible, no transforms */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
   .css-reveal { opacity: 1 !important; transform: none !important; }
-  [data-reveal], [data-stagger] { opacity: 1 !important; transform: none !important; }
+  html.js [data-reveal], html.js [data-stagger], html.js [data-stagger] > * { opacity: 1 !important; transform: none !important; }
 }
