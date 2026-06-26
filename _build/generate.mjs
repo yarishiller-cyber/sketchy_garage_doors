@@ -15,7 +15,24 @@ const EMAIL = cfg.email;
 const TEL_DISPLAY = cfg.phoneDisplay;
 const TEL = cfg.phoneHref;
 const SMS_BODY = encodeURIComponent(cfg.smsBody);
-const ASSETV = "20260623b";
+const ASSETV = "20260626a";
+
+/* ---------------- CLEAN URLs (FLEET-STANDARDS §0) ----------------
+   Pages stay flat `page.html` on disk, but every PUBLIC URL is extensionless
+   directory-style: `/page.html` -> `/page/`, `/dir/page.html` -> `/dir/page/`,
+   home `/` and dir-index `/dir/` unchanged. 404 is ErrorDocument-only and kept as `/404.html`. */
+const cleanUrl = (u) => {
+  if (typeof u !== "string") return u;
+  if (/404\.html/.test(u)) return u; // ErrorDocument target stays literal
+  return u.replace(/(\/[^"'\s?#]+?)\.html((?:[?#][^"'\s]*)?)/g, "$1/$2");
+};
+// Sweep an entire emitted HTML string: rewrite href/content URLs + JSON-LD `.html` URLs to clean form.
+const cleanHtml = (html) => html
+  .replace(/(\b(?:href|content)\s*=\s*")([^"]*?)\.html((?:[?#][^"]*)?)(")/gi,
+    (m, a, p, q, z) => (/404$/.test(p) || /\/404$/.test(p)) ? m : `${a}${p}/${q}${z}`)
+  // JSON-LD `"...":"...page.html..."` -> clean (skip 404)
+  .replace(/("(?:url|item|@id)"\s*:\s*"[^"]*?)\.html([#"])/gi,
+    (m, a, t) => /404$/.test(a) ? m : `${a}/${t}`);
 const TODAY = "2026-06-22";
 const UPDATED_LABEL = "June 2026"; // visible freshness byline (FLEET-STANDARDS §7)
 const byline = () => `<p class="updated-byline" style="font-size:.85rem;color:var(--ink-soft);margin:.2rem 0 0">Updated ${UPDATED_LABEL} · written &amp; reviewed by the Sketchy Garage Doors team</p>`;
@@ -262,7 +279,7 @@ function heroPreload(img) {
   return `<link rel="preload" as="image" href="${b}-head-960.webp" imagesrcset="${b}-head-480.webp 480w, ${b}-head-960.webp 960w" imagesizes="100vw" fetchpriority="high">`;
 }
 function layout({ path, title, desc, body, jsonld = [], ogImg = "/assets/og/home.jpg", bodyClass = "", preload = "", noindex = false }) {
-  const canonical = DOMAIN + path;
+  const canonical = DOMAIN + cleanUrl(path);
   // OG/Twitter require png/jpg (webp is ignored by Facebook/Slack) -> fall back to the real hero photo
   const og = /\.(png|jpe?g)$/.test(ogImg) ? ogImg : "/assets/og/home.jpg";
   const graph = { "@context": "https://schema.org", "@graph": [businessNode(), { "@type": "WebSite", "@id": `${DOMAIN}/#website`, url: `${DOMAIN}/`, name: BRAND, publisher: { "@id": `${DOMAIN}/#business` } }] };
@@ -387,7 +404,20 @@ function assuranceStrip() {
 }
 
 mkdirSync(new URL("../service-areas/", import.meta.url), { recursive: true });
-const out = (rel, html) => { writeFileSync(new URL("../" + rel, import.meta.url), html); console.log("wrote", rel); };
+const SITEMAP_PATHS = []; // clean public URLs collected as pages are emitted (skips noindex/404)
+const out = (rel, html, { sitemapPath, indexable = true } = {}) => {
+  const cleaned = cleanHtml(html);
+  writeFileSync(new URL("../" + rel, import.meta.url), cleaned);
+  console.log("wrote", rel);
+  if (indexable && !/name="robots" content="noindex/.test(cleaned)) {
+    // derive clean public URL from the on-disk path unless one was given
+    let p = sitemapPath;
+    if (!p) {
+      p = "/" + rel.replace(/^\/+/, "").replace(/index\.html$/, "").replace(/\.html$/, "/");
+    }
+    if (!SITEMAP_PATHS.includes(p)) SITEMAP_PATHS.push(p);
+  }
+};
 
 /* =====================================================================
    SERVICE PAGE DATA (unique copy each)
@@ -1421,4 +1451,14 @@ thankYou();
 privacy();
 terms();
 notFound();
+
+/* ---------------- sitemap.xml (clean URLs only) ---------------- */
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${SITEMAP_PATHS.map((p) => `  <url>\n    <loc>${DOMAIN}${p}</loc>\n    <lastmod>${TODAY}</lastmod>\n  </url>`).join("\n")}
+</urlset>
+`;
+writeFileSync(new URL("../sitemap.xml", import.meta.url), sitemap);
+console.log("wrote sitemap.xml (" + SITEMAP_PATHS.length + " urls)");
+
 console.log("\nAll pages generated.");

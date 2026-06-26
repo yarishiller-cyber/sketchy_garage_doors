@@ -48,7 +48,7 @@
     form.addEventListener("submit", function (e) {
       // honeypot: if filled, silently succeed (likely bot)
       var hp = form.querySelector('input[name="company_url"]');
-      if (hp && hp.value) { e.preventDefault(); window.location.href = "/thank-you.html"; return; }
+      if (hp && hp.value) { e.preventDefault(); window.location.href = "/thank-you/"; return; }
 
       if (!window.fetch) return; // let the normal POST happen
       e.preventDefault();
@@ -58,7 +58,7 @@
       var data = new FormData(form);
       fetch(form.getAttribute("action") || "/form-handler.php", { method: "POST", body: data, headers: { "Accept": "application/json" } })
         .then(function (r) { return r.ok ? r : Promise.reject(r); })
-        .then(function () { window.location.href = "/thank-you.html"; })
+        .then(function () { window.location.href = "/thank-you/"; })
         .catch(function () {
           // Fallback: open a pre-filled email so the lead is never lost
           try {

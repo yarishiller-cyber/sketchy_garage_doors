@@ -7,7 +7,7 @@
  * form and the Become-a-Partner form (distinguished by the `kind` field).
  *
  * Progressive enhancement:
- *   - No-JS browsers POST normally  -> we 303-redirect to /thank-you.html
+ *   - No-JS browsers POST normally  -> we 303-redirect to /thank-you/
  *   - JS (fetch) sends Accept: application/json -> we return {"ok":true}
  *
  * Optional Supabase: if you later create a public `leads` table with an anon
@@ -26,9 +26,9 @@ function done($ok, $wantsJson, $msg = '') {
         echo json_encode(array('ok' => $ok, 'message' => $msg));
     } else {
         if ($ok) {
-            header('Location: /thank-you.html', true, 303);
+            header('Location: /thank-you/', true, 303);
         } else {
-            header('Location: /contact.html?error=1', true, 303);
+            header('Location: /contact/?error=1', true, 303);
         }
     }
     exit;
